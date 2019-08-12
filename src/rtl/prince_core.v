@@ -67,15 +67,19 @@ module prince_core(
   //----------------------------------------------------------------
   reg [63 : 0] k0_reg;
   reg [63 : 0] k0_new;
-  reg          k0_we;
-
   reg [63 : 0] k1_reg;
   reg [63 : 0] k1_new;
-  reg          k1_we;
+  reg [63 : 0] kp_reg;
+  reg [63 : 0] kp_new;
+  reg          k_we;
 
   reg          ready_reg;
   reg          ready_new;
   reg          ready_we;
+
+  reg [127 : 0] state_reg;
+  reg [127 : 0] state_new;
+  reg           state_we;
 
   reg [5 : 0]  round_ctr_reg;
   reg [5 : 0]  round_ctr_new;
@@ -91,6 +95,8 @@ module prince_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
+  reg init_keys;
+  reg init_state;
 
 
   //----------------------------------------------------------------
@@ -112,9 +118,10 @@ module prince_core(
       if (!reset_n)
         begin
           ready_reg     <= 1'h1;
-          k0_reg        <= 32'h0;
-          k1_reg        <= 32'h0;
-          sum_reg       <= 32'h0;
+          k0_reg        <= 64'h0;
+          k1_reg        <= 64'h0;
+          kp_reg        <= 64'h0;
+          state_reg     <= 128'h0;
           round_ctr_reg <= NUM_ROUNDS;
           core_ctrl_reg <= CTRL_IDLE;
         end
@@ -123,11 +130,15 @@ module prince_core(
           if (ready_we)
             ready_reg <= ready_new;
 
-          if (k0_we)
-              k0_reg <= k0_new;
+          if (state_we)
+            state_reg <= state_new;
 
-          if (k1_we)
+          if (k_we)
+            begin
+              k0_reg <= k0_new;
               k1_reg <= k1_new;
+              kp_reg <= kp_new;
+            end
 
           if (round_ctr_we)
             round_ctr_reg <= round_ctr_new;
@@ -145,6 +156,29 @@ module prince_core(
   //----------------------------------------------------------------
   always @*
     begin : prince_core_dp
+      state_new = 128'h0;
+      state_we  = 1'h0;
+
+      k0_new = 64'h0;
+      k1_new = 64'h0;
+      kp_new = 64'h0;
+      k_we   = 1'h0;
+
+      if (init_state)
+        begin
+          state_new = block;
+          state_we  = 1'h1;
+        end
+
+      if (init_keys)
+        begin
+          k0_new = key[127 : 64];
+          k1_new = key[63 : 0];
+          kp_new = {k0_new[0], k0_new[63 : 2], k0_new[63] ^ k0_new[1]};
+          k0_we = 1'h1;
+          k1_we = 1'h1;
+          kp_we = 1'h1;
+        end
     end // prince_core_dp
 
 
@@ -178,6 +212,8 @@ module prince_core(
     begin : prince_core_ctrl
       ready_new     = 1'h0;
       ready_we      = 1'h0;
+      init_state    = 1'h0;
+      init_keys     = 1'h0;
       round_ctr_rst = 1'h0;
       round_ctr_inc = 1'h0;
       core_ctrl_new = CTRL_IDLE;
@@ -197,7 +233,11 @@ module prince_core(
 
         CTRL_INIT:
           begin
+            init_state    = 1'h1;
+            init_keys     = 1'h1;
             round_ctr_rst = 1'h1;
+            ready_new     = 1'h1;
+            ready_we      = 1'h1;
             core_ctrl_new = CTRL_IDLE;
             core_ctrl_we  = 1'h1;
           end
