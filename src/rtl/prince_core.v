@@ -103,7 +103,7 @@ module prince_core(
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
   assign ready  = ready_reg;
-  assign result = {v0_reg, v1_reg};
+  assign result = state_reg;
 
 
   //----------------------------------------------------------------
@@ -175,9 +175,7 @@ module prince_core(
           k0_new = key[127 : 64];
           k1_new = key[63 : 0];
           kp_new = {k0_new[0], k0_new[63 : 2], k0_new[63] ^ k0_new[1]};
-          k0_we = 1'h1;
-          k1_we = 1'h1;
-          kp_we = 1'h1;
+          k_we   = 1'h1;
         end
     end // prince_core_dp
 
