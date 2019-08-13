@@ -107,6 +107,99 @@ module prince_core(
 
 
   //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  function [3 : 0] sb(input [3 : 0] x);
+    case(x)
+      4'h0: sb = 4'hb;
+      4'h1: sb = 4'hf;
+      4'h2: sb = 4'h3;
+      4'h3: sb = 4'h2;
+      4'h4: sb = 4'ha;
+      4'h5: sb = 4'hc;
+      4'h6: sb = 4'h9;
+      4'h7: sb = 4'h1;
+      4'h8: sb = 4'h6;
+      4'h9: sb = 4'h7;
+      4'ha: sb = 4'h8;
+      4'hb: sb = 4'h0;
+      4'hc: sb = 4'he;
+      4'hd: sb = 4'h5;
+      4'he: sb = 4'hd;
+      4'hf: sb = 4'h4;
+    endcase // case (x)
+  endfunction // sb
+
+
+  function [63 : 0] sbox(input [63 : 0] x);
+    sbox = {sb(x[63 : 60]), sb(x[59 : 56]),
+            sb(x[55 : 52]), sb(x[51 : 48]),
+            sb(x[47 : 44]), sb(x[43 : 40]),
+            sb(x[39 : 36]), sb(x[35 : 32]),
+            sb(x[31 : 28]), sb(x[27 : 24]),
+            sb(x[23 : 20]), sb(x[19 : 16]),
+            sb(x[15 : 12]), sb(x[11 : 08]),
+            sb(x[07 : 04]), sb(x[03 : 00])};
+  endfunction // sbox
+
+
+  function [3 : 0] isb(input [3 : 0] x);
+    case(x)
+      4'h0: isb = 4'hb;
+      4'h1: isb = 4'h7;
+      4'h2: isb = 4'h3;
+      4'h3: isb = 4'h2;
+      4'h4: isb = 4'hf;
+      4'h5: isb = 4'hd;
+      4'h6: isb = 4'h8;
+      4'h7: isb = 4'h9;
+      4'h8: isb = 4'ha;
+      4'h9: isb = 4'h6;
+      4'ha: isb = 4'h4;
+      4'hb: isb = 4'h0;
+      4'hc: isb = 4'h5;
+      4'hd: isb = 4'he;
+      4'he: isb = 4'hc;
+      4'hf: isb = 4'h1;
+    endcase // case (x)
+  endfunction // sb
+
+
+  function [63 : 0] isbox(input [63 : 0] x);
+    isbox = {isb(x[63 : 60]), isb(x[59 : 56]),
+             isb(x[55 : 52]), isb(x[51 : 48]),
+             isb(x[47 : 44]), isb(x[43 : 40]),
+             isb(x[39 : 36]), isb(x[35 : 32]),
+             isb(x[31 : 28]), isb(x[27 : 24]),
+             isb(x[23 : 20]), isb(x[19 : 16]),
+             isb(x[15 : 12]), isb(x[11 : 08]),
+             isb(x[07 : 04]), isb(x[03 : 00])};
+  endfunction // sbox
+
+
+  function [63 : 0] rc(input [3 : 0] round);
+    begin
+      case(round)
+        00: rc = 64'h0000000000000000;
+        01: rc = 64'h13198a2e03707344;
+        02: rc = 64'ha4093822299f31d0;
+        03: rc = 64'h082efa98ec4e6c89;
+        04: rc = 64'h452821e638d01377;
+        05: rc = 64'hbe5466cf34e90c6c;
+        06: rc = 64'h7ef84f78fd955cb1;
+        07: rc = 64'h85840851f1ac43aa;
+        08: rc = 64'hc882d32f25323c54;
+        09: rc = 64'h64a51195e0e3610d;
+        10: rc = 64'hd3b5a399ca0c2399;
+        11: rc = 64'hc0ac29b7c97c50dd;
+
+        default:
+          rc = 64'h0;
+      endcase // case (round)
+    end
+  endfunction // rc
+
+
+  //----------------------------------------------------------------
   // reg_update
   //
   // Update functionality for all registers in the core.
