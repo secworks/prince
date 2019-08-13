@@ -97,6 +97,7 @@ module prince_core(
   //----------------------------------------------------------------
   reg init_keys;
   reg init_state;
+  reg round_state;
 
 
   //----------------------------------------------------------------
@@ -263,6 +264,12 @@ module prince_core(
           state_we  = 1'h1;
         end
 
+      if (round_state)
+        begin
+          state_new = sbox(state_reg);
+          state_we  = 1'h1;
+        end
+
       if (init_keys)
         begin
           k0_new = key[127 : 64];
@@ -304,6 +311,7 @@ module prince_core(
       ready_new     = 1'h0;
       ready_we      = 1'h0;
       init_state    = 1'h0;
+      round_state   = 1'h0;
       init_keys     = 1'h0;
       round_ctr_rst = 1'h0;
       round_ctr_inc = 1'h0;
