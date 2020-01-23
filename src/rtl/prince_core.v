@@ -61,6 +61,8 @@ module prince_core(
 
   localparam NUM_ROUNDS   = 10;
 
+  localparam alpha = 64'hc0ac29b7c97c50dd;
+
 
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
@@ -77,8 +79,8 @@ module prince_core(
   reg          ready_new;
   reg          ready_we;
 
-  reg [127 : 0] state_reg;
-  reg [127 : 0] state_new;
+  reg [63 : 0] state_reg;
+  reg [63 : 0] state_new;
   reg           state_we;
 
   reg [5 : 0]  round_ctr_reg;
@@ -177,6 +179,14 @@ module prince_core(
   endfunction // sbox
 
 
+  function [63 : 0] sr(input [63 : 0] x);
+    sr = {x[00 * 4 +:4], x[05 * 4 +:4], x[10 * 4 +:4], x[15 * 4 +:4],
+          x[04 * 4 +:4], x[09 * 4 +:4], x[14 * 4 +:4], x[03 * 4 +:4],
+          x[08 * 4 +:4], x[13 * 4 +:4], x[02 * 4 +:4], x[07 * 4 +:4],
+          x[12 * 4 +:4], x[01 * 4 +:4], x[06 * 4 +:4], x[11 * 4 +:4]};
+  endfunction // sr
+
+
   function [63 : 0] rc(input [3 : 0] round);
     begin
       case(round)
@@ -215,7 +225,7 @@ module prince_core(
           k0_reg        <= 64'h0;
           k1_reg        <= 64'h0;
           kp_reg        <= 64'h0;
-          state_reg     <= 128'h0;
+          state_reg     <= 64'h0;
           round_ctr_reg <= NUM_ROUNDS;
           core_ctrl_reg <= CTRL_IDLE;
         end
@@ -250,7 +260,7 @@ module prince_core(
   //----------------------------------------------------------------
   always @*
     begin : prince_core_dp
-      state_new = 128'h0;
+      state_new = 64'h0;
       state_we  = 1'h0;
 
       k0_new = 64'h0;
