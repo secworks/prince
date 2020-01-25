@@ -284,7 +284,7 @@ module prince_core(
         begin
           k0_new = key[127 : 64];
           k1_new = key[63 : 0];
-          kp_new = {k0_new[0], k0_new[63 : 2], k0_new[63] ^ k0_new[1]};
+          kp_new = {k0_new[0], k0_new[63 : 2]} ^ {k0_new[62 : 0], k0_new[63]};
           k_we   = 1'h1;
         end
     end // prince_core_dp
