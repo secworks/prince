@@ -37,10 +37,10 @@
 #===================================================================
 
 CORE_SRC=../src/rtl/prince_core.v
-TOP_SRC=../src/rtl/prince.v $(CORE_SRC)
+TB_CORE_SRC =../src/tb/tb_prince_core.v
 
+#TOP_SRC=../src/rtl/prince.v $(CORE_SRC)
 #TB_TOP_SRC =../src/tb/tb_prince.v
-#TB_CORE_SRC =../src/tb/tb_prince_core.v
 
 CC = iverilog
 CC_FLAGS = -Wall
