@@ -61,7 +61,7 @@ module prince_core(
 
   localparam NUM_ROUNDS   = 10;
 
-  localparam alpha = 64'hc0ac29b7c97c50dd;
+  localparam ALPHA = 64'hc0ac29b7c97c50dd;
 
 
   //----------------------------------------------------------------
@@ -81,7 +81,7 @@ module prince_core(
 
   reg [63 : 0] state_reg;
   reg [63 : 0] state_new;
-  reg           state_we;
+  reg          state_we;
 
   reg [5 : 0]  round_ctr_reg;
   reg [5 : 0]  round_ctr_new;
@@ -202,12 +202,36 @@ module prince_core(
         09: rc = 64'h64a51195e0e3610d;
         10: rc = 64'hd3b5a399ca0c2399;
         11: rc = 64'hc0ac29b7c97c50dd;
-
         default:
           rc = 64'h0;
       endcase // case (round)
     end
   endfunction // rc
+
+  function [63 : 0] mp(input [63 : 0] block);
+    begin
+      mp = block;
+    end
+  endfunction // mp
+
+  function [63 : 0] imp(input [63 : 0] block);
+    begin
+      imp = block;
+    end
+  endfunction // imp
+
+  function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
+    begin
+      round = mp(sbox(block)) ^ rc(n) ^ key;
+    end
+  endfunction // round
+
+
+  function [63 : 0] iround(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
+    begin
+      iround = isbox(imp(rc(n) ^ key ^ block));
+    end
+  endfunction // iround
 
 
   //----------------------------------------------------------------
