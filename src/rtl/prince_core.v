@@ -277,12 +277,6 @@ module prince_core(
     end
   endfunction // mp
 
-  function [63 : 0] imp(input [63 : 0] block);
-    begin
-      imp = block;
-    end
-  endfunction // imp
-
   function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
       round = mp(sbox(block)) ^ rc(n) ^ key;
