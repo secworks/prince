@@ -99,7 +99,7 @@ module prince_core(
   //----------------------------------------------------------------
   reg init_keys;
   reg init_state;
-  reg round_state;
+  reg update_state;
 
 
   //----------------------------------------------------------------
@@ -277,6 +277,93 @@ module prince_core(
     end
   endfunction // mp
 
+  function [63 : 0] imp(input [63 : 0] block);
+    begin
+      imp[63] = block[59] ^ block[55] ^ block[51];
+      imp[62] = block[62] ^ block[54] ^ block[50];
+      imp[61] = block[61] ^ block[57] ^ block[49];
+      imp[60] = block[60] ^ block[56] ^ block[52];
+      imp[59] = block[63] ^ block[59] ^ block[55];
+      imp[58] = block[58] ^ block[54] ^ block[50];
+      imp[57] = block[61] ^ block[53] ^ block[49];
+      imp[56] = block[60] ^ block[56] ^ block[48];
+      imp[55] = block[63] ^ block[59] ^ block[51];
+      imp[54] = block[62] ^ block[58] ^ block[54];
+      imp[53] = block[57] ^ block[53] ^ block[49];
+      imp[52] = block[60] ^ block[52] ^ block[48];
+      imp[51] = block[63] ^ block[55] ^ block[51];
+      imp[50] = block[62] ^ block[58] ^ block[50];
+      imp[49] = block[61] ^ block[57] ^ block[53];
+      imp[48] = block[56] ^ block[52] ^ block[48];
+      imp[47] = block[47] ^ block[43] ^ block[39];
+      imp[46] = block[42] ^ block[38] ^ block[34];
+      imp[45] = block[45] ^ block[37] ^ block[33];
+      imp[44] = block[44] ^ block[40] ^ block[32];
+      imp[43] = block[47] ^ block[43] ^ block[35];
+      imp[42] = block[46] ^ block[42] ^ block[38];
+      imp[41] = block[41] ^ block[37] ^ block[33];
+      imp[40] = block[44] ^ block[36] ^ block[32];
+      imp[39] = block[47] ^ block[39] ^ block[35];
+      imp[38] = block[46] ^ block[42] ^ block[34];
+      imp[37] = block[45] ^ block[41] ^ block[37];
+      imp[36] = block[40] ^ block[36] ^ block[32];
+      imp[35] = block[43] ^ block[39] ^ block[35];
+      imp[34] = block[46] ^ block[38] ^ block[34];
+      imp[33] = block[45] ^ block[41] ^ block[33];
+      imp[32] = block[44] ^ block[40] ^ block[36];
+      imp[31] = block[31] ^ block[27] ^ block[23];
+      imp[30] = block[26] ^ block[22] ^ block[18];
+      imp[29] = block[29] ^ block[21] ^ block[17];
+      imp[28] = block[28] ^ block[24] ^ block[16];
+      imp[27] = block[31] ^ block[27] ^ block[19];
+      imp[26] = block[30] ^ block[26] ^ block[22];
+      imp[25] = block[25] ^ block[21] ^ block[17];
+      imp[24] = block[28] ^ block[20] ^ block[16];
+      imp[23] = block[31] ^ block[23] ^ block[19];
+      imp[22] = block[30] ^ block[26] ^ block[18];
+      imp[21] = block[29] ^ block[25] ^ block[21];
+      imp[20] = block[24] ^ block[20] ^ block[16];
+      imp[19] = block[27] ^ block[23] ^ block[19];
+      imp[18] = block[30] ^ block[22] ^ block[18];
+      imp[17] = block[29] ^ block[25] ^ block[17];
+      imp[16] = block[28] ^ block[24] ^ block[20];
+      imp[15] = block[11] ^ block[7]  ^ block[3];
+      imp[14] = block[14] ^ block[6]  ^ block[2];
+      imp[13] = block[13] ^ block[9]  ^ block[1];
+      imp[12] = block[12] ^ block[8]  ^ block[4];
+      imp[11] = block[15] ^ block[11] ^ block[7];
+      imp[10] = block[10] ^ block[6]  ^ block[2];
+      imp[9]  = block[13] ^ block[5]  ^ block[1];
+      imp[8]  = block[12] ^ block[8]  ^ block[0];
+      imp[7]  = block[15] ^ block[11] ^ block[3];
+      imp[6]  = block[14] ^ block[10] ^ block[6];
+      imp[5]  = block[9]  ^ block[5]  ^ block[1];
+      imp[4]  = block[12] ^ block[4]  ^ block[0];
+      imp[3]  = block[15] ^ block[7]  ^ block[3];
+      imp[2]  = block[14] ^ block[10] ^ block[2];
+      imp[1]  = block[13] ^ block[9]  ^ block[5];
+      imp[0]  = block[8]  ^ block[4]  ^ block[0];
+    end
+  endfunction // imp
+
+  function [63 : 0] round0(input [63 : 0] block, input [63 : 0] key);
+    begin
+      round0 = block;
+    end
+  endfunction // round0
+
+  function [63 : 0] round11(input [63 : 0] block, input [63 : 0] key);
+    begin
+      round11 = block;
+    end
+  endfunction // round11
+
+  function [63 : 0] middle(input [63 : 0] block);
+    begin
+      middle = block;
+    end
+  endfunction // middle
+
   function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
       round = mp(sbox(block)) ^ rc(n) ^ key;
@@ -341,25 +428,26 @@ module prince_core(
   //----------------------------------------------------------------
   always @*
     begin : prince_core_dp
+      reg [63 : 0] r0;
+      reg [63 : 0] r1;
+      reg [63 : 0] r2;
+      reg [63 : 0] r3;
+      reg [63 : 0] r4;
+      reg [63 : 0] r5;
+      reg [63 : 0] mr;
+      reg [63 : 0] r6;
+      reg [63 : 0] r7;
+      reg [63 : 0] r8;
+      reg [63 : 0] r9;
+      reg [63 : 0] r10;
+      reg [63 : 0] r11;
+
       state_new = 64'h0;
       state_we  = 1'h0;
-
       k0_new = 64'h0;
       k1_new = 64'h0;
       kp_new = 64'h0;
       k_we   = 1'h0;
-
-      if (init_state)
-        begin
-          state_new = block;
-          state_we  = 1'h1;
-        end
-
-      if (round_state)
-        begin
-          state_new = sbox(state_reg);
-          state_we  = 1'h1;
-        end
 
       if (init_keys)
         begin
@@ -367,6 +455,35 @@ module prince_core(
           k1_new = key[63 : 0];
           kp_new = {k0_new[0], k0_new[63 : 2]} ^ {k0_new[62 : 0], k0_new[63]};
           k_we   = 1'h1;
+        end
+
+      if (init_state)
+        begin
+          state_new = block;
+          state_we  = 1'h1;
+        end
+
+      if (update_state)
+        begin
+          r0  = round0(state_reg, key);
+          r1  = round(r0, k1_reg, 1);
+          r2  = round(r0, k1_reg, 1);
+          r3  = round(r0, k1_reg, 1);
+          r4  = round(r0, k1_reg, 1);
+          r5  = round(r0, k1_reg, 1);
+
+          mr  = middle(r5);
+
+          r6  = iround(mr, k1_reg, 6);
+          r7  = iround(r6, k1_reg, 7);
+          r8  = iround(r7, k1_reg, 8);
+          r9  = iround(r8, k1_reg, 9);
+          r10 = iround(r9, k1_reg, 10);
+
+          r11 = round11(r10, k1_reg);
+
+          state_new = r11;
+          state_we  = 1'h1;
         end
     end // prince_core_dp
 
@@ -402,7 +519,7 @@ module prince_core(
       ready_new     = 1'h0;
       ready_we      = 1'h0;
       init_state    = 1'h0;
-      round_state   = 1'h0;
+      update_state  = 1'h0;
       init_keys     = 1'h0;
       round_ctr_rst = 1'h0;
       round_ctr_inc = 1'h0;
