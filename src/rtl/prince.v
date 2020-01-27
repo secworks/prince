@@ -1,7 +1,7 @@
 //======================================================================
 //
-// xtea.v
-// ------
+// prince.v
+// --------
 // Top level wrapper for the PRINCE block cipher core.
 //
 //
