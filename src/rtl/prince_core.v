@@ -442,6 +442,20 @@ module prince_core(
       reg [63 : 0] r10;
       reg [63 : 0] r11;
 
+      r0 = 64'h0;
+      r1 = 64'h0;
+      r2 = 64'h0;
+      r3 = 64'h0;
+      r4 = 64'h0;
+      r5 = 64'h0;
+      mr = 64'h0;
+      r6 = 64'h0;
+      r7 = 64'h0;
+      r8 = 64'h0;
+      r9 = 64'h0;
+      r10 = 64'h0;
+      r11 = 64'h0;
+
       state_new = 64'h0;
       state_we  = 1'h0;
       k0_new = 64'h0;
