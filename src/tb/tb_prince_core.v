@@ -134,15 +134,15 @@ module tb_prince_core();
       $display("result = 0x%08x", dut.result);
       $display("");
       $display("Internal states:");
-      $display("k0: 0x%08x, k1: 0x%08x, kp:  0x%08x",
+      $display("k0: 0x%08x, k1: 0x%08x, kp: 0x%08x",
                dut.k0_reg, dut.k1_reg, dut.kp_reg);
       $display("");
-      $display("r0: 0x%08x, r1: 0x%08x, r2:  0x%08x",
+      $display("r0: 0x%08x, r1:  0x%08x, r2:  0x%08x",
                dut.prince_core_dp.r0, dut.prince_core_dp.r1, dut.prince_core_dp.r2);
-      $display("r3: 0x%08x, r4: 0x%08x, r5:  0x%08x",
+      $display("r3: 0x%08x, r4:  0x%08x, r5:  0x%08x",
                dut.prince_core_dp.r3, dut.prince_core_dp.r4, dut.prince_core_dp.r5);
       $display("mr: 0x%08x", dut.prince_core_dp.mr);
-      $display("r6: 0x%08x, r7: 0x%08x, r8:  0x%08x",
+      $display("r6: 0x%08x, r7:  0x%08x, r8:  0x%08x",
                dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
                dut.prince_core_dp.r9, dut.prince_core_dp.r10, dut.prince_core_dp.r11);
@@ -151,6 +151,7 @@ module tb_prince_core();
                dut.init_keys, dut.init_state, dut.update_state);
       $display("core_ctrl_reg: 0x%02x, core_ctrl_new: 0x%02x, core_ctrl_we: 0x%01x",
                dut.core_ctrl_reg, dut.core_ctrl_new, dut.core_ctrl_we);
+      $display("");
     end
   endtask // dump_dut_state
 
