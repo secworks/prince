@@ -3,7 +3,8 @@
 // tb_prince_core.v
 // --------------
 // Testbench for the prince block cipher core.
-//
+// Testvectors from:
+// https://github.com/sebastien-riou/prince-c-ref/blob/master/log.txt
 //
 // Author: Joachim Strombergson
 // Copyright (c) 2019, Assured AB
@@ -238,20 +239,70 @@ module tb_prince_core();
 
 
   //----------------------------------------------------------------
-  // tc1()
+  // test()
+  // Runs an encipher, decipher test with given key and plaintext
+  // The generated ciphertext is verified with the given ciphertet.
+  // The generated plaintxt is also verified against the
+  // given plaintext.
   //----------------------------------------------------------------
-  task tc1;
+  task test(input integer tc, input reg [127 : 0] key,
+            input reg [63 : 0] plaintext, input reg [63 : 0] ciphertext);
     begin
-      $display("*** TC1 - encryption started.");
+      tc_ctr = tc_ctr + 1;
 
       tb_monitor = 1;
+
+      $display("*** TC%01d - encryption started.", tc);
+      tb_encdec  = 1;
+      tb_next    = 1;
+      tb_key     = key;
+      tb_block   = plaintext;
+
       #(10 * CLK_PERIOD);
+      wait_ready();
+      #(2 * CLK_PERIOD);
+
+      $display("*** TC%01d - encryption completed.", tc);
+
+      if (tb_result == ciphertext)
+        $display("*** TC%01d correct ciphertext generated: 0x%016x",
+                 tc, tb_result);
+      else
+        begin
+          error_ctr = error_ctr + 1;
+          $display("*** TC%01d incorrect ciphertext generated", tc);
+          $display("*** TC%01d expected: 0x%016x", tc, ciphertext);
+          $display("*** TC%01d got:      0x%016x", tc, tb_result);
+        end
+
+      $display("*** TC%01d - decryption started.", tc);
+      tb_block  = ciphertext;
+      tb_encdec = 0;
+      tb_next   = 1;
+
+      #(10 * CLK_PERIOD);
+      wait_ready();
+      #(2 * CLK_PERIOD);
+      $display("*** TC%01d - decryption completed.", tc);
+
+
+      if (tb_result == plaintext)
+        $display("*** TC%01d correct plaintext generated: 0x%016x",
+                 tc, tb_result);
+      else
+        begin
+          error_ctr = error_ctr + 1;
+          $display("*** TC%01d incorrect plaintext generated", tc);
+          $display("*** TC%01d expected: 0x%016x", tc, plaintext);
+          $display("*** TC%01d got:      0x%016x", tc, tb_result);
+        end
+
       tb_monitor = 0;
 
-      $display("*** TC1 completed.");
+      $display("*** TC%01d completed.", tc);
       $display("");
     end
-  endtask // tc1
+  endtask // test
 
 
   //----------------------------------------------------------------
@@ -267,7 +318,32 @@ module tb_prince_core();
       init_sim();
       reset_dut();
 
-      tc1();
+      test(1, 128'h00000000_00000000_00000000_00000000,
+           64'h00000000_00000000, 64'h818665aa_0d02dfda);
+
+      test(2, 128'h00000000_00000000_00000000_00000000,
+           64'hffffffff_ffffffff, 64'h604ae6ca_03c20ada);
+
+      test(3, 128'hffffffff_ffffffff_00000000_00000000,
+           64'h00000000_00000000, 64'h9fb51935_fc3df524);
+
+      test(4, 128'h00000000_00000000_ffffffff_ffffffff,
+           64'h00000000_00000000, 64'h78a54cbe_737bb7ef);
+
+      test(5, 128'h00000000_00000000_fedcba98_76543210,
+           64'h01234567_89abcdef, 64'hae25ad3c_a8fa9ccf);
+
+      test(6, 128'h00112233_44556677_8899aabb_ccddeeff,
+           64'h01234567_89abcdef, 64'hd6dcb597_8de756ee);
+
+      test(7, 128'h01122334_4556678_899aabbc_cddeeff0,
+           64'h01234567_89abcdef, 64'h392f599f_46761cd3);
+
+      test(8, 128'h01122334_4556678_899aabbc_cddeeff0,
+           64'hf0123456_789abcde, 64'h4fb5e332_b9b409bb);
+
+      test(9, 128'hd8cdb780_70b4c55a_818665aa_0d02dfda,
+           64'h69c4e0d8_6a7b0430, 64'h43c6b256_d79de7e8);
 
       display_test_result();
       $display("");
