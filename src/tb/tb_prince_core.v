@@ -166,10 +166,14 @@ module tb_prince_core();
   //----------------------------------------------------------------
   task reset_dut;
     begin
-      $display("*** Toggle reset.");
+      $display("*** DUT before reset:");
+      dump_dut_state();
+      $display("*** Toggling reset.");
       tb_reset_n = 0;
       #(2 * CLK_PERIOD);
       tb_reset_n = 1;
+      $display("*** DUT after reset:");
+      dump_dut_state();
     end
   endtask // reset_dut
 
