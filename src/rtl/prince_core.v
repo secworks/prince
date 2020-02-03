@@ -57,10 +57,7 @@ module prince_core(
   //----------------------------------------------------------------
   localparam CTRL_IDLE    = 2'h0;
   localparam CTRL_INIT    = 2'h1;
-  localparam CTRL_ROUNDS0 = 2'h2;
-  localparam CTRL_ROUNDS1 = 2'h3;
-
-  localparam NUM_ROUNDS   = 10;
+  localparam CTRL_NEXT    = 2'h2;
 
   localparam ALPHA = 64'hc0ac29b7c97c50dd;
 
@@ -83,12 +80,6 @@ module prince_core(
   reg [63 : 0] state_reg;
   reg [63 : 0] state_new;
   reg          state_we;
-
-  reg [5 : 0]  round_ctr_reg;
-  reg [5 : 0]  round_ctr_new;
-  reg          round_ctr_rst;
-  reg          round_ctr_inc;
-  reg          round_ctr_we;
 
   reg [1 : 0]  core_ctrl_reg;
   reg [1 : 0]  core_ctrl_new;
@@ -395,7 +386,6 @@ module prince_core(
           k1_reg        <= 64'h0;
           kp_reg        <= 64'h0;
           state_reg     <= 64'h0;
-          round_ctr_reg <= NUM_ROUNDS;
           core_ctrl_reg <= CTRL_IDLE;
         end
       else
@@ -412,9 +402,6 @@ module prince_core(
               k1_reg <= k1_new;
               kp_reg <= kp_new;
             end
-
-          if (round_ctr_we)
-            round_ctr_reg <= round_ctr_new;
 
           if (core_ctrl_we)
             core_ctrl_reg <= core_ctrl_new;
@@ -504,27 +491,6 @@ module prince_core(
 
 
   //----------------------------------------------------------------
-  // round_ctr
-  //
-  // Update logic for the round counter.
-  //----------------------------------------------------------------
-  always @*
-    begin : round_ctr
-      round_ctr_new = 6'h0;
-      round_ctr_we  = 1'h0;
-
-      if (round_ctr_rst)
-        round_ctr_we  = 1'h1;
-
-      if (round_ctr_inc)
-        begin
-          round_ctr_new = round_ctr_reg + 1'h1;
-          round_ctr_we  = 1'h1;
-        end
-    end // round_ctr
-
-
-  //----------------------------------------------------------------
   // prince_core_ctrl
   //
   // Control FSM for aes core.
@@ -536,30 +502,44 @@ module prince_core(
       init_state    = 1'h0;
       update_state  = 1'h0;
       init_keys     = 1'h0;
-      round_ctr_rst = 1'h0;
-      round_ctr_inc = 1'h0;
       core_ctrl_new = CTRL_IDLE;
       core_ctrl_we  = 1'h0;
 
       case (core_ctrl_reg)
         CTRL_IDLE:
           begin
+            if (init)
+              begin
+                ready_new     = 1'h0;
+                ready_we      = 1'h1;
+                init_keys     = 1'h1;
+                core_ctrl_new = CTRL_INIT;
+                core_ctrl_we  = 1'h1;
+              end
+
             if (next)
               begin
                 ready_new     = 1'h0;
                 ready_we      = 1'h1;
-                core_ctrl_new = CTRL_INIT;
+                init_state    = 1'h1;
+                core_ctrl_new = CTRL_NEXT;
                 core_ctrl_we  = 1'h1;
               end
           end
 
         CTRL_INIT:
           begin
-            init_state    = 1'h1;
-            init_keys     = 1'h1;
-            round_ctr_rst = 1'h1;
             ready_new     = 1'h1;
             ready_we      = 1'h1;
+            core_ctrl_new = CTRL_IDLE;
+            core_ctrl_we  = 1'h1;
+          end
+
+        CTRL_NEXT:
+          begin
+            ready_new     = 1'h1;
+            ready_we      = 1'h1;
+            update_state  = 1'h1;
             core_ctrl_new = CTRL_IDLE;
             core_ctrl_we  = 1'h1;
           end
