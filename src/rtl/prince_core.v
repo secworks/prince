@@ -41,6 +41,7 @@ module prince_core(
                    input wire           reset_n,
 
                    input wire           encdec,
+                   input wire           init,
                    input wire           next,
                    output wire          ready,
 

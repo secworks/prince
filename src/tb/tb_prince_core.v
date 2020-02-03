@@ -63,6 +63,7 @@ module tb_prince_core();
   reg           tb_clk;
   reg           tb_reset_n;
   reg           tb_encdec;
+  reg           tb_init;
   reg           tb_next;
   wire          tb_ready;
   reg [127 : 0] tb_key;
@@ -78,6 +79,7 @@ module tb_prince_core();
                 .reset_n(tb_reset_n),
 
                 .encdec(tb_encdec),
+                .init(tb_init),
                 .next(tb_next),
                 .ready(tb_ready),
 
@@ -231,6 +233,7 @@ module tb_prince_core();
       tb_clk     = 0;
       tb_reset_n = 1;
       tb_encdec  = 0;
+      tb_init    = 0;
       tb_next    = 0;
       tb_key     = 128'h0;
       tb_block   = 64'h0;

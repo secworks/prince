@@ -60,6 +60,7 @@ module prince(
   localparam ADDR_VERSION      = 8'h02;
 
   localparam ADDR_CTRL         = 8'h08;
+  localparam CTRL_INIT_BIT     = 0;
   localparam CTRL_NEXT_BIT     = 1;
 
   localparam ADDR_STATUS       = 8'h09;
@@ -77,14 +78,17 @@ module prince(
   localparam ADDR_RESULT0      = 8'h30;
   localparam ADDR_RESULT1      = 8'h31;
 
-  localparam CORE_NAME0        = 32'h78746561; // "xtea"
-  localparam CORE_NAME1        = 32'h2d313238; // "-128"
-  localparam CORE_VERSION      = 32'h302e3630; // "0.60"
+  localparam CORE_NAME0        = 32'h7072696e; // "prin"
+  localparam CORE_NAME1        = 32'h63652020; // "ce  "
+  localparam CORE_VERSION      = 32'h302e3130; // "0.10"
 
 
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
+  reg init_reg;
+  reg init_new;
+
   reg next_reg;
   reg next_new;
 
@@ -126,6 +130,7 @@ module prince(
                    .reset_n(reset_n),
 
                    .encdec(encdec_reg),
+                   .init(init_reg),
                    .next(next_reg),
                    .ready(core_ready),
 
@@ -154,11 +159,13 @@ module prince(
           for (i = 0 ; i < 4 ; i = i + 1)
             key_reg[i] <= 32'h0;
 
+          init_reg   <= 1'h0;
           next_reg   <= 1'h0;
           encdec_reg <= 1'h0;
         end
       else
         begin
+          init_reg <= init_new;
           next_reg <= next_new;
 
           if (config_we)
@@ -182,6 +189,7 @@ module prince(
   //----------------------------------------------------------------
   always @*
     begin : api
+      init_new      = 1'h0;
       next_new      = 1'h0;
       config_we     = 1'h0;
       key_we        = 1'h0;
@@ -195,6 +203,7 @@ module prince(
               if (core_ready)
                 begin
                   if (address == ADDR_CTRL)
+                    init_new = write_data[CTRL_INIT_BIT];
                     next_new = write_data[CTRL_NEXT_BIT];
 
                   if (address == ADDR_CONFIG)
