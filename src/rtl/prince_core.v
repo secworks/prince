@@ -340,7 +340,7 @@ module prince_core(
 
   function [63 : 0] round0(input [63 : 0] block, input [63 : 0] key);
     begin
-      round0 = block;
+      round0 = block ^ key ^ rc(0);
     end
   endfunction // round0
 
@@ -467,12 +467,12 @@ module prince_core(
 
       if (update_state)
         begin
-          r0  = round0(state_reg, key);
+          r0  = round0(state_reg, k0_reg);
           r1  = round(r0, k1_reg, 1);
-          r2  = round(r0, k1_reg, 1);
-          r3  = round(r0, k1_reg, 1);
-          r4  = round(r0, k1_reg, 1);
-          r5  = round(r0, k1_reg, 1);
+          r2  = round(r1, k1_reg, 2);
+          r3  = round(r2, k1_reg, 3);
+          r4  = round(r3, k1_reg, 4);
+          r5  = round(r4, k1_reg, 5);
 
           mr  = middle(r5);
 

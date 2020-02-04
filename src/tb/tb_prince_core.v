@@ -149,6 +149,8 @@ module tb_prince_core();
                dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
                dut.prince_core_dp.r9, dut.prince_core_dp.r10, dut.prince_core_dp.r11);
+      $display("state_reg: 0x%016x, state_new: 0x%016x, state_we: 0x%01x",
+               dut.state_reg, dut.state_new, dut.state_we);
       $display("");
       $display("init_keys: 0x%01x, init_state: 0x%01x, update_state: 0x%01x",
                dut.init_keys, dut.init_state, dut.update_state);
@@ -257,6 +259,7 @@ module tb_prince_core();
     begin
       tc_ctr = tc_ctr + 1;
       tb_monitor = 1;
+      tb_block   = 64'h0;
 
       $display("*** TC%01d - init started.", tc);
       tb_init    = 1;
