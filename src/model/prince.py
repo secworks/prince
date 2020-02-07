@@ -1,5 +1,56 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#=======================================================================
+#
+# prince.py
+# ---------
+# Simple, pure Python, model of the PRINCE block cipher.
+#
+#
+# Author: Joachim Strömbergson
+# Copyright (c) 2020, Secworks Sweden AB
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in
+#    the documentation and/or other materials provided with the
+#    distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+# STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+# ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#=======================================================================
 
-class Prince():
+#-------------------------------------------------------------------
+# Python module imports.
+#-------------------------------------------------------------------
+import sys
+
+
+#-------------------------------------------------------------------
+# PRINCE
+#-------------------------------------------------------------------
+class PRINCE():
+    VERBOSE = True
+    DUMP_VARS = True
+
     sbox = [0xb, 0xf, 0x3, 0x2, 0xa, 0xc, 0x9, 0x1,
             0x6, 0x7, 0x8, 0x0, 0xe, 0x5, 0xd, 0x4]
 
@@ -22,25 +73,45 @@ class Prince():
     NUM_ROUNDS = 10
 
 
+    #-------------------------------------------------------------------
+    #-------------------------------------------------------------------
     def __init__(self, key, debug = True):
-        self.debug = debug
-        assert (len(key)) == 16, "Key must be 16 bytes."
-        self.k0 = key[:8]
-        self.k1 = key[8:]
-        self.state = [0] * 16
+        pass
+#        self.debug = debug
+#        assert (len(key)) == 16, "Key must be 16 bytes."
+#        self.k0 = key[:8]
+#        self.k1 = key[8:]
+#        self.state = [0] * 16
+#
+#        if self.debug:
+#            print("Subkey k0:", self.k0)
+#            print("Subkey k0:", self.k1)
 
-        if self.debug:
-            print("Subkey k0:", self.k0)
-            print("Subkey k0:", self.k1)
 
-
+    #-------------------------------------------------------------------
+    #-------------------------------------------------------------------
     def encrypt(self, block):
-        self.state = block[:]
-        self.state = self.__xor_block(self.state, self.k0)
-        for i in(range(self.NUM_ROUNDS)):
-            self.state = self.__xor_block(self.state, self.rc[i])
-            self.state = self.__sbox_block(self.state)
-        return self.state
+        return block
+
+#        self.state = block[:]
+#        self.state = self.__xor_block(self.state, self.k0)
+#        for i in(range(self.NUM_ROUNDS)):
+#            self.state = self.__xor_block(self.state, self.rc[i])
+#            self.state = self.__sbox_block(self.state)
+#        return self.state
+
+
+    #-------------------------------------------------------------------
+    #-------------------------------------------------------------------
+    def decrypt(self, block):
+        return block
+
+#        self.state = block[:]
+#        self.state = self.__xor_block(self.state, self.k0)
+#        for i in(range(self.NUM_ROUNDS)):
+#            self.state = self.__xor_block(self.state, self.rc[i])
+#            self.state = self.__sbox_block(self.state)
+#        return self.state
 
 
     def __xor_block(self, b, d):
@@ -70,15 +141,63 @@ class Prince():
 
 
 #-------------------------------------------------------------------
+# Testing the cipher using test vectors from
+# https://github.com/sebastien-riou/prince-c-ref/blob/master/log.txt
+#-------------------------------------------------------------------
+def test_cipher():
+    tc1 = (0x00000000_00000000_00000000_00000000,
+           0x00000000_00000000, 0x818665aa_0d02dfda)
+
+    tc2 = (0x00000000_00000000_00000000_00000000,
+           0xffffffff_ffffffff, 0x604ae6ca_03c20ada)
+
+    tc3 = (0xffffffff_ffffffff_00000000_00000000,
+           0x00000000_00000000, 0x9fb51935_fc3df524)
+
+    tc4 = (0x00000000_00000000_ffffffff_ffffffff,
+           0x00000000_00000000, 0x78a54cbe_737bb7ef)
+
+    tc4 = (0x00000000_00000000_fedcba98_76543210,
+           0x01234567_89abcdef, 0xae25ad3c_a8fa9ccf)
+
+    tc5 = (0x00112233_44556677_8899aabb_ccddeeff,
+           0x01234567_89abcdef, 0xd6dcb597_8de756ee)
+
+    tc6 = (0x01122334_45566778_899aabbc_cddeeff0,
+           0x01234567_89abcdef, 0x392f599f_46761cd3)
+
+    tc7 = (0x01122334_45566778_899aabbc_cddeeff0,
+           0xf0123456_789abcde, 0x4fb5e332_b9b409bb)
+
+    tc8 = (0xd8cdb780_70b4c55a_818665aa_0d02dfda,
+           0x69c4e0d8_6a7b0430, 0x43c6b256_d79de7e8)
+
+    tests = [tc1, tc2, tc3, tc4, tc5, tc6, tc7, tc8]
+
+
+    print("Testing the cipher.")
+
+    for test in tests:
+        (key, plaintext, ciphertext) = test
+        my_cipher = PRINCE(key)
+        c = my_cipher.encrypt(plaintext)
+        p = my_cipher.decrypt(ciphertext)
+
+        if c == ciphertext:
+            print("Correct ciphertext genereted.")
+        else:
+            print("Incorrect ciphertext genereted.")
+
+        if p == plaintext:
+            print("Correct plaintext genereted.")
+        else:
+            print("Incorrect plaintext genereted.")
+
+
+#-------------------------------------------------------------------
 #-------------------------------------------------------------------
 def main():
-    my_key = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    my_block = [0, 0, 0, 0, 0, 0, 0, 0]
-    print("Testing the Prince implementation.")
-    debug = True
-    my_cipher = Prince(my_key, debug)
-    my_res = my_cipher.encrypt(my_block)
-    print(my_res)
+    test_cipher()
 
 
 #-------------------------------------------------------------------
@@ -89,3 +208,7 @@ def main():
 if __name__=="__main__":
     # Run the main function.
     sys.exit(main())
+
+#=======================================================================
+# EOF prince.py
+#=======================================================================
