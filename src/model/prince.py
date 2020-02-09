@@ -50,6 +50,7 @@ import sys
 class PRINCE():
     VERBOSE = True
     DUMP_VARS = True
+    NUM_ROUNDS = 10
 
     sbox = [0xb, 0xf, 0x3, 0x2, 0xa, 0xc, 0x9, 0x1,
             0x6, 0x7, 0x8, 0x0, 0xe, 0x5, 0xd, 0x4]
@@ -70,27 +71,28 @@ class PRINCE():
           [0xd3, 0xb5, 0xa3, 0x99, 0xca, 0x0c, 0x23, 0x99],
           [0xc0, 0xac, 0x29, 0xb7, 0xc9, 0x7c, 0x50, 0xdd]]
 
-    NUM_ROUNDS = 10
-
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
     def __init__(self, key, debug = True):
-        pass
-#        self.debug = debug
-#        assert (len(key)) == 16, "Key must be 16 bytes."
-#        self.k0 = key[:8]
-#        self.k1 = key[8:]
-#        self.state = [0] * 16
-#
-#        if self.debug:
-#            print("Subkey k0:", self.k0)
-#            print("Subkey k0:", self.k1)
+        self.key = key.to_bytes(16, "big")
+        assert (len(self.key)) == 16, "Key must be 16 bytes."
+        self.debug = debug
+        if self.debug:
+            print("Init:")
+            print("key: 0x%s" % self.key.hex())
 
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
     def encrypt(self, block):
+        self.k0 = self.key[0 :  7]
+        self.k1 = self.key[8 : 15]
+        if self.debug:
+            print("Encrypt:")
+            print("k0: 0x%s" % self.k0.hex())
+            print("k1: 0x%s" % self.k1.hex())
+
         return block
 
 #        self.state = block[:]
@@ -184,14 +186,14 @@ def test_cipher():
         p = my_cipher.decrypt(ciphertext)
 
         if c == ciphertext:
-            print("Correct ciphertext genereted.")
+            print("Correct ciphertext generated.")
         else:
-            print("Incorrect ciphertext genereted.")
+            print("Incorrect ciphertext generated.")
 
         if p == plaintext:
-            print("Correct plaintext genereted.")
+            print("Correct plaintext generated.")
         else:
-            print("Incorrect plaintext genereted.")
+            print("Incorrect plaintext generated.")
 
 
 #-------------------------------------------------------------------
