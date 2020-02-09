@@ -71,27 +71,33 @@ class PRINCE():
           [0xd3, 0xb5, 0xa3, 0x99, 0xca, 0x0c, 0x23, 0x99],
           [0xc0, 0xac, 0x29, 0xb7, 0xc9, 0x7c, 0x50, 0xdd]]
 
+    alpha = 0xc0ac29b7c97c50dd
+
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
     def __init__(self, key, debug = True):
-        self.key = key.to_bytes(16, "big")
-        assert (len(self.key)) == 16, "Key must be 16 bytes."
+        self.key = key
         self.debug = debug
         if self.debug:
             print("Init:")
-            print("key: 0x%s" % self.key.hex())
+            print("key: 0x%032x" % self.key)
 
 
     #-------------------------------------------------------------------
     #-------------------------------------------------------------------
     def encrypt(self, block):
-        self.k0 = self.key[0 :  7]
-        self.k1 = self.key[8 : 15]
+        self.k0 = self.key >> 64
+        self.k1 = self.key & (2**64 - 1)
+        self.kp = (self.k0 >> 1) ^ (self.k1 >> 63)
+        self.block = block
+
         if self.debug:
             print("Encrypt:")
-            print("k0: 0x%s" % self.k0.hex())
-            print("k1: 0x%s" % self.k1.hex())
+            print("k0: 0x%016x" % self.k0)
+            print("k1: 0x%016x" % self.k1)
+            print("kp: 0x%016x" % self.kp)
+            print("pt: 0x%016x" % self.block)
 
         return block
 
@@ -159,28 +165,29 @@ def test_cipher():
     tc4 = (0x00000000_00000000_ffffffff_ffffffff,
            0x00000000_00000000, 0x78a54cbe_737bb7ef)
 
-    tc4 = (0x00000000_00000000_fedcba98_76543210,
+    tc5 = (0x00000000_00000000_fedcba98_76543210,
            0x01234567_89abcdef, 0xae25ad3c_a8fa9ccf)
 
-    tc5 = (0x00112233_44556677_8899aabb_ccddeeff,
+    tc6 = (0x00112233_44556677_8899aabb_ccddeeff,
            0x01234567_89abcdef, 0xd6dcb597_8de756ee)
 
-    tc6 = (0x01122334_45566778_899aabbc_cddeeff0,
+    tc7 = (0x01122334_45566778_899aabbc_cddeeff0,
            0x01234567_89abcdef, 0x392f599f_46761cd3)
 
-    tc7 = (0x01122334_45566778_899aabbc_cddeeff0,
+    tc8 = (0x01122334_45566778_899aabbc_cddeeff0,
            0xf0123456_789abcde, 0x4fb5e332_b9b409bb)
 
-    tc8 = (0xd8cdb780_70b4c55a_818665aa_0d02dfda,
+    tc9 = (0xd8cdb780_70b4c55a_818665aa_0d02dfda,
            0x69c4e0d8_6a7b0430, 0x43c6b256_d79de7e8)
 
-    tests = [tc1, tc2, tc3, tc4, tc5, tc6, tc7, tc8]
+    tests = [tc1, tc2, tc3, tc4, tc5, tc6, tc7, tc8, tc9]
 
 
     print("Testing the cipher.")
 
-    for test in tests:
-        (key, plaintext, ciphertext) = test
+    for i in range(len(tests)):
+        print("Testcase %d:" % (i + 1))
+        (key, plaintext, ciphertext) = tests[i]
         my_cipher = PRINCE(key)
         c = my_cipher.encrypt(plaintext)
         p = my_cipher.decrypt(ciphertext)
@@ -194,6 +201,8 @@ def test_cipher():
             print("Correct plaintext generated.")
         else:
             print("Incorrect plaintext generated.")
+
+        print("")
 
 
 #-------------------------------------------------------------------
