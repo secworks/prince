@@ -83,25 +83,64 @@ class PRINCE():
         if self.debug:
             print("Init:")
             print("key: 0x%032x" % self.key)
+            print("")
 
 
     #-------------------------------------------------------------------
     # encrypt()
     #-------------------------------------------------------------------
-    def encrypt(self, block):
+    def encrypt(self, plaintext):
+        # Calculate the keys
         self.k0 = self.key >> 64
         self.k1 = self.key & (2**64 - 1)
         self.kp = self.__ror64(self.k0, 1) ^ self.k0 >> 63
-        self.block = block
+
+        self.core_input = plaintext ^ self.k0;
+
+        self.r0 = self.__first(self.core_input)
+
+        self.r1 = self.__round(self.r0, 1)
+        self.r2 = self.__round(self.r1, 2)
+        self.r3 = self.__round(self.r2, 3)
+        self.r4 = self.__round(self.r3, 4)
+        self.r5 = self.__round(self.r4, 5)
+
+        self.middle = self.__middle(self.r5)
+
+        self.r6  = self.__inv_round(self.middle, 6)
+        self.r7  = self.__inv_round(self.r6, 7)
+        self.r8  = self.__inv_round(self.r7, 8)
+        self.r9  = self.__inv_round(self.r8, 9)
+        self.r10 = self.__inv_round(self.r9, 10)
+
+        self.core_output = self.__final(self.r10)
+
+        self.ciphertext = self.core_output ^ self.kp
+
 
         if self.debug:
             print("Encrypt:")
-            print("k0: 0x%016x" % self.k0)
-            print("k1: 0x%016x" % self.k1)
-            print("kp: 0x%016x" % self.kp)
-            print("pt: 0x%016x" % self.block)
+            print("k0:          0x%016x" % self.k0)
+            print("k1:          0x%016x" % self.k1)
+            print("kp:          0x%016x" % self.kp)
+            print("core_input:  0x%016x" % self.core_input)
+            print("round 0:     0x%016x" % self.r0)
+            print("round 1:     0x%016x" % self.r1)
+            print("round 2:     0x%016x" % self.r2)
+            print("round 3:     0x%016x" % self.r3)
+            print("round 4:     0x%016x" % self.r4)
+            print("round 5:     0x%016x" % self.r5)
+            print("middle:      0x%016x" % self.middle)
+            print("round 6:     0x%016x" % self.r6)
+            print("round 7:     0x%016x" % self.r7)
+            print("round 8:     0x%016x" % self.r8)
+            print("round 9:     0x%016x" % self.r9)
+            print("round 10:    0x%016x" % self.r10)
+            print("core_output: 0x%016x" % self.core_output)
+            print("ciphertext:  0x%016x" % self.ciphertext)
+            print("")
 
-        return block
+        return self.ciphertext
 
 
     #-------------------------------------------------------------------
@@ -111,21 +150,42 @@ class PRINCE():
         self.kp = self.key >> 64
         self.k1 = (self.key & (2**64 - 1)) ^ self.ALPHA
         self.k0 = self.__ror64(self.kp, 1) ^ self.kp >> 63
-        self.block = block
+        self.core_input = block ^ self.k0;
 
         if self.debug:
             print("Decrypt:")
-            print("k0: 0x%016x" % self.k0)
-            print("k1: 0x%016x" % self.k1)
-            print("kp: 0x%016x" % self.kp)
-            print("pt: 0x%016x" % self.block)
+            print("k0:         0x%016x" % self.k0)
+            print("k1:         0x%016x" % self.k1)
+            print("kp:         0x%016x" % self.kp)
+            print("core_input: 0x%016x" % self.core_input)
+            print("")
 
-        return block
+        return self.core_input
 
 
     #-------------------------------------------------------------------
     # Internal methods.
     #-------------------------------------------------------------------
+    def __first(self, b):
+        return b ^ self.k1
+
+
+    def __round(self, b, n):
+        return b
+
+
+    def __middle(self, b):
+        return b
+
+
+    def __inv_round(self, b, n):
+        return b
+
+
+    def __final(self, b):
+        return b
+
+
     def __xor_block(self, b, d):
         assert len(b) == len(d), "Blocks must be of equal length"
         res = [0] * len(b)
