@@ -228,8 +228,8 @@ class PRINCE():
         return res
 
 
-    def __mix(self, b):
-        return b
+    def __mix(self, block):
+        return block
 
 
     def __rc(self, b, n):
@@ -238,6 +238,85 @@ class PRINCE():
 
     def __ror64(self, x, n):
         return ((x >> n) | (x << (64 - n))) & (2**64 - 1)
+
+
+    def __mprime(self, block):
+        bits = self.__int2bits(block)
+        mp_bits = [0] * 64
+
+        mp_bits[63] = bits[59] ^ bits[55] ^ bits[51]
+        mp_bits[62] = bits[62] ^ bits[54] ^ bits[50]
+        mp_bits[61] = bits[61] ^ bits[57] ^ bits[49]
+        mp_bits[60] = bits[60] ^ bits[56] ^ bits[52]
+        mp_bits[59] = bits[63] ^ bits[59] ^ bits[55]
+        mp_bits[58] = bits[58] ^ bits[54] ^ bits[50]
+        mp_bits[57] = bits[61] ^ bits[53] ^ bits[49]
+        mp_bits[56] = bits[60] ^ bits[56] ^ bits[48]
+        mp_bits[55] = bits[63] ^ bits[59] ^ bits[51]
+        mp_bits[54] = bits[62] ^ bits[58] ^ bits[54]
+        mp_bits[53] = bits[57] ^ bits[53] ^ bits[49]
+        mp_bits[52] = bits[60] ^ bits[52] ^ bits[48]
+        mp_bits[51] = bits[63] ^ bits[55] ^ bits[51]
+        mp_bits[50] = bits[62] ^ bits[58] ^ bits[50]
+        mp_bits[49] = bits[61] ^ bits[57] ^ bits[53]
+        mp_bits[48] = bits[56] ^ bits[52] ^ bits[48]
+        mp_bits[47] = bits[47] ^ bits[43] ^ bits[39]
+        mp_bits[46] = bits[42] ^ bits[38] ^ bits[34]
+        mp_bits[45] = bits[45] ^ bits[37] ^ bits[33]
+        mp_bits[44] = bits[44] ^ bits[40] ^ bits[32]
+        mp_bits[43] = bits[47] ^ bits[43] ^ bits[35]
+        mp_bits[42] = bits[46] ^ bits[42] ^ bits[38]
+        mp_bits[41] = bits[41] ^ bits[37] ^ bits[33]
+        mp_bits[40] = bits[44] ^ bits[36] ^ bits[32]
+        mp_bits[39] = bits[47] ^ bits[39] ^ bits[35]
+        mp_bits[38] = bits[46] ^ bits[42] ^ bits[34]
+        mp_bits[37] = bits[45] ^ bits[41] ^ bits[37]
+        mp_bits[36] = bits[40] ^ bits[36] ^ bits[32]
+        mp_bits[35] = bits[43] ^ bits[39] ^ bits[35]
+        mp_bits[34] = bits[46] ^ bits[38] ^ bits[34]
+        mp_bits[33] = bits[45] ^ bits[41] ^ bits[33]
+        mp_bits[32] = bits[44] ^ bits[40] ^ bits[36]
+        mp_bits[31] = bits[31] ^ bits[27] ^ bits[23]
+        mp_bits[30] = bits[26] ^ bits[22] ^ bits[18]
+        mp_bits[29] = bits[29] ^ bits[21] ^ bits[17]
+        mp_bits[28] = bits[28] ^ bits[24] ^ bits[16]
+        mp_bits[27] = bits[31] ^ bits[27] ^ bits[19]
+        mp_bits[26] = bits[30] ^ bits[26] ^ bits[22]
+        mp_bits[25] = bits[25] ^ bits[21] ^ bits[17]
+        mp_bits[24] = bits[28] ^ bits[20] ^ bits[16]
+        mp_bits[23] = bits[31] ^ bits[23] ^ bits[19]
+        mp_bits[22] = bits[30] ^ bits[26] ^ bits[18]
+        mp_bits[21] = bits[29] ^ bits[25] ^ bits[21]
+        mp_bits[20] = bits[24] ^ bits[20] ^ bits[16]
+        mp_bits[19] = bits[27] ^ bits[23] ^ bits[19]
+        mp_bits[18] = bits[30] ^ bits[22] ^ bits[18]
+        mp_bits[17] = bits[29] ^ bits[25] ^ bits[17]
+        mp_bits[16] = bits[28] ^ bits[24] ^ bits[20]
+        mp_bits[15] = bits[11] ^ bits[7]  ^ bits[3]
+        mp_bits[14] = bits[14] ^ bits[6]  ^ bits[2]
+        mp_bits[13] = bits[13] ^ bits[9]  ^ bits[1]
+        mp_bits[12] = bits[12] ^ bits[8]  ^ bits[4]
+        mp_bits[11] = bits[15] ^ bits[11] ^ bits[7]
+        mp_bits[10] = bits[10] ^ bits[6]  ^ bits[2]
+        mp_bits[9]  = bits[13] ^ bits[5]  ^ bits[1]
+        mp_bits[8]  = bits[12] ^ bits[8]  ^ bits[0]
+        mp_bits[7]  = bits[15] ^ bits[11] ^ bits[3]
+        mp_bits[6]  = bits[14] ^ bits[10] ^ bits[6]
+        mp_bits[5]  = bits[9]  ^ bits[5]  ^ bits[1]
+        mp_bits[4]  = bits[12] ^ bits[4]  ^ bits[0]
+        mp_bits[3]  = bits[15] ^ bits[7]  ^ bits[3]
+        mp_bits[2]  = bits[14] ^ bits[10] ^ bits[2]
+        mp_bits[1]  = bits[13] ^ bits[9]  ^ bits[5]
+        mp_bits[0]  = bits[8]  ^ bits[4]  ^ bits[0]
+
+        return self.bits2int(mp_bits)
+
+
+    def __int2bits(self, i):
+        return [1] * 64
+
+    def __bits2int(self, b):
+        return 0xdeadbeef_deadbeef
 
 
 #-------------------------------------------------------------------
