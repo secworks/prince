@@ -52,24 +52,18 @@ class PRINCE():
     DUMP_VARS = True
     NUM_ROUNDS = 10
 
-    sbox = [0xb, 0xf, 0x3, 0x2, 0xa, 0xc, 0x9, 0x1,
+    SBOX = [0xb, 0xf, 0x3, 0x2, 0xa, 0xc, 0x9, 0x1,
             0x6, 0x7, 0x8, 0x0, 0xe, 0x5, 0xd, 0x4]
 
-    isbox = [0xb, 0x7, 0x3, 0x2, 0xf, 0xd, 0x8, 0x9,
-             0xa, 0x6, 0x4, 0x0, 0x5, 0xe, 0xc, 0x1]
+    INV_SBOX = [0xb, 0x7, 0x3, 0x2, 0xf, 0xd, 0x8, 0x9,
+                0xa, 0x6, 0x4, 0x0, 0x5, 0xe, 0xc, 0x1]
 
-    rc = [[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-          [0x13, 0x19, 0x8a, 0x2e, 0x03, 0x70, 0x73, 0x44],
-          [0xa4, 0x09, 0x38, 0x22, 0x29, 0x9f, 0x31, 0xd0],
-          [0x08, 0x2e, 0xfa, 0x98, 0xec, 0x4e, 0x6c, 0x89],
-          [0x45, 0x28, 0x21, 0xe6, 0x38, 0xd0, 0x13, 0x77],
-          [0xbe, 0x54, 0x66, 0xcf, 0x34, 0xe9, 0x0c, 0x6c],
-          [0x7e, 0xf8, 0x4f, 0x78, 0xfd, 0x95, 0x5c, 0xb1],
-          [0x85, 0x84, 0x08, 0x51, 0xf1, 0xac, 0x43, 0xaa],
-          [0xc8, 0x82, 0xd3, 0x2f, 0x25, 0x32, 0x3c, 0x54],
-          [0x64, 0xa5, 0x11, 0x95, 0xe0, 0xe3, 0x61, 0x0d],
-          [0xd3, 0xb5, 0xa3, 0x99, 0xca, 0x0c, 0x23, 0x99],
-          [0xc0, 0xac, 0x29, 0xb7, 0xc9, 0x7c, 0x50, 0xdd]]
+    RC = [0x0000000000000000, 0x13198a2e03707344,
+          0xa4093822299f31d0, 0x082efa98ec4e6c89,
+          0x452821e638d01377, 0xbe5466cf34e90c6c,
+          0x7ef84f78fd955cb1, 0x85840851f1ac43aa,
+          0xc882d32f25323c54, 0x64a51195e0e3610d,
+          0xd3b5a399ca0c2399, 0xc0ac29b7c97c50dd]
 
     ALPHA = 0xc0ac29b7c97c50dd
 
@@ -77,7 +71,7 @@ class PRINCE():
     #-------------------------------------------------------------------
     # __init__()
     #-------------------------------------------------------------------
-    def __init__(self, key, debug = True):
+    def __init__(self, key, debug = False):
         self.key = key
         self.debug = debug
         if self.debug:
@@ -171,7 +165,21 @@ class PRINCE():
 
 
     def __round(self, b, n):
-        return b
+        self.s = self.__sbox(b)
+        self.m = self.__mix(self.s)
+        self.rc = self.__rc(self.m, n)
+        self.res = self.rc ^ self.k1
+
+        if self.debug:
+            print("    Round %02d:" % n)
+            print("    in:  0x%016x" % b)
+            print("    s:   0x%016x" % self.s)
+            print("    m:   0x%016x" % self.m)
+            print("    rc:  0x%016x" % self.rc)
+            print("    res: 0x%016x" % self.res)
+            print("")
+
+        return self.res
 
 
     def __middle(self, b):
@@ -194,22 +202,38 @@ class PRINCE():
         return res
 
 
-    def __sbox_block(self, b):
-        res = [0] * len(b)
-        for i in range(len(b)):
-            hn = b[i] >> 4
-            ln = b[i] & 0xf
-            res[i] = self.sbox[hn] * 16 + self.sbox[ln]
+    def __sbox(self, block):
+        res = 0
+        byte_array = block.to_bytes(8, "big")
+        for b in byte_array:
+            low_nybble  = b & 0x0f
+            high_nybble = b >> 4
+            sln = self.SBOX[low_nybble]
+            shn = self.SBOX[high_nybble]
+            sb = (shn << 4) + sln
+            res = (res << 8) + sb
         return res
 
 
-    def __isbox_block(self, b):
-        res = [0] * len(b)
-        for i in range(len(b)):
-            hn = b[i] >> 4
-            ln = b[i] & 0xf
-            res[i] = self.isbox[hn] * 16 + self.isbox[ln]
+    def __inv_sbox(self, block):
+        res = 0
+        byte_array = block.to_bytes(8, "big")
+        for b in byte_array:
+            low_nybble  = b & 0x0f
+            high_nybble = b >> 4
+            sln = self.INV_SBOX[low_nybble]
+            shn = self.INV_SBOX[high_nybble]
+            sb = (shn << 4) + sln
+            res = (res << 8) + sb
         return res
+
+
+    def __mix(self, b):
+        return b
+
+
+    def __rc(self, b, n):
+        return b ^ self.RC[n]
 
 
     def __ror64(self, x, n):
@@ -256,7 +280,7 @@ def test_cipher():
     for i in range(len(tests)):
         print("Testcase %d:" % (i + 1))
         (key, plaintext, ciphertext) = tests[i]
-        my_cipher = PRINCE(key)
+        my_cipher = PRINCE(key, True)
         c = my_cipher.encrypt(plaintext)
         p = my_cipher.decrypt(ciphertext)
 
