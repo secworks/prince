@@ -75,6 +75,7 @@ class PRINCE():
 
 
     #-------------------------------------------------------------------
+    # __init__()
     #-------------------------------------------------------------------
     def __init__(self, key, debug = True):
         self.key = key
@@ -85,11 +86,12 @@ class PRINCE():
 
 
     #-------------------------------------------------------------------
+    # encrypt()
     #-------------------------------------------------------------------
     def encrypt(self, block):
         self.k0 = self.key >> 64
         self.k1 = self.key & (2**64 - 1)
-        self.kp = (self.k0 >> 1) ^ (self.k1 >> 63)
+        self.kp = self.__ror64(self.k0, 1) ^ self.k0 >> 63
         self.block = block
 
         if self.debug:
@@ -101,27 +103,17 @@ class PRINCE():
 
         return block
 
-#        self.state = block[:]
-#        self.state = self.__xor_block(self.state, self.k0)
-#        for i in(range(self.NUM_ROUNDS)):
-#            self.state = self.__xor_block(self.state, self.rc[i])
-#            self.state = self.__sbox_block(self.state)
-#        return self.state
-
 
     #-------------------------------------------------------------------
+    # decrypt()
     #-------------------------------------------------------------------
     def decrypt(self, block):
         return block
 
-#        self.state = block[:]
-#        self.state = self.__xor_block(self.state, self.k0)
-#        for i in(range(self.NUM_ROUNDS)):
-#            self.state = self.__xor_block(self.state, self.rc[i])
-#            self.state = self.__sbox_block(self.state)
-#        return self.state
 
-
+    #-------------------------------------------------------------------
+    # Internal methods.
+    #-------------------------------------------------------------------
     def __xor_block(self, b, d):
         assert len(b) == len(d), "Blocks must be of equal length"
         res = [0] * len(b)
@@ -146,6 +138,10 @@ class PRINCE():
             ln = b[i] & 0xf
             res[i] = self.isbox[hn] * 16 + self.isbox[ln]
         return res
+
+
+    def __ror64(self, x, n):
+        return ((x >> n) | (x << (64 - n))) & (2**64 - 1)
 
 
 #-------------------------------------------------------------------
