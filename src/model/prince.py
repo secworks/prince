@@ -71,7 +71,7 @@ class PRINCE():
           [0xd3, 0xb5, 0xa3, 0x99, 0xca, 0x0c, 0x23, 0x99],
           [0xc0, 0xac, 0x29, 0xb7, 0xc9, 0x7c, 0x50, 0xdd]]
 
-    alpha = 0xc0ac29b7c97c50dd
+    ALPHA = 0xc0ac29b7c97c50dd
 
 
     #-------------------------------------------------------------------
@@ -108,6 +108,18 @@ class PRINCE():
     # decrypt()
     #-------------------------------------------------------------------
     def decrypt(self, block):
+        self.kp = self.key >> 64
+        self.k1 = (self.key & (2**64 - 1)) ^ self.ALPHA
+        self.k0 = self.__ror64(self.kp, 1) ^ self.kp >> 63
+        self.block = block
+
+        if self.debug:
+            print("Decrypt:")
+            print("k0: 0x%016x" % self.k0)
+            print("k1: 0x%016x" % self.k1)
+            print("kp: 0x%016x" % self.kp)
+            print("pt: 0x%016x" % self.block)
+
         return block
 
 
