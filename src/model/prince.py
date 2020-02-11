@@ -309,14 +309,18 @@ class PRINCE():
         mp_bits[1]  = bits[13] ^ bits[9]  ^ bits[5]
         mp_bits[0]  = bits[8]  ^ bits[4]  ^ bits[0]
 
-        return self.bits2int(mp_bits)
+        return self.__bits2int(mp_bits)
 
 
-    def __int2bits(self, i):
-        return [1] * 64
+    def __int2bits(self, v):
+        return [int(x) for x in list(bin(v))[2:]]
+
 
     def __bits2int(self, b):
-        return 0xdeadbeef_deadbeef
+        v = 0;
+        for i in b:
+            v = (v << 1) + i
+        return v
 
 
 #-------------------------------------------------------------------
