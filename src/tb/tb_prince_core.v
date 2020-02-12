@@ -140,6 +140,7 @@ module tb_prince_core();
       $display("k0: 0x%08x, k1: 0x%08x, kp: 0x%08x",
                dut.k0_reg, dut.k1_reg, dut.kp_reg);
       $display("");
+      $display("core_input: 0x%08x", dut.prince_core_dp.core_input);
       $display("r0: 0x%08x, r1:  0x%08x, r2:  0x%08x",
                dut.prince_core_dp.r0, dut.prince_core_dp.r1, dut.prince_core_dp.r2);
       $display("r3: 0x%08x, r4:  0x%08x, r5:  0x%08x",
@@ -149,6 +150,7 @@ module tb_prince_core();
                dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
                dut.prince_core_dp.r9, dut.prince_core_dp.r10, dut.prince_core_dp.r11);
+      $display("core_output: 0x%08x", dut.prince_core_dp.core_output);
       $display("state_reg: 0x%016x, state_new: 0x%016x, state_we: 0x%01x",
                dut.state_reg, dut.state_new, dut.state_we);
       $display("");
@@ -258,7 +260,7 @@ module tb_prince_core();
             input reg [63 : 0] plaintext, input reg [63 : 0] ciphertext);
     begin
       tc_ctr = tc_ctr + 1;
-      tb_monitor = 0;
+      tb_monitor = 1;
       tb_block   = 64'h0;
       $display("*** TC%01d started.", tc);
       dump_dut_state();
