@@ -258,23 +258,29 @@ module tb_prince_core();
             input reg [63 : 0] plaintext, input reg [63 : 0] ciphertext);
     begin
       tc_ctr = tc_ctr + 1;
-      tb_monitor = 1;
+      tb_monitor = 0;
       tb_block   = 64'h0;
+      $display("*** TC%01d started.", tc);
+      dump_dut_state();
 
-      $display("*** TC%01d - init started.", tc);
-      tb_init    = 1;
+      $display("*** TC%01d - init for encryption started.", tc);
+      tb_init    = 1'h1;
       tb_key     = key;
+      tb_encdec  = 1'h1;
       #(CLK_PERIOD);
       wait_ready();
-      $display("*** TC%01d - init completed.", tc);
+      $display("*** TC%01d - init for encryption completed.", tc);
+      dump_dut_state();
+      #(CLK_PERIOD);
 
       $display("*** TC%01d - encryption started.", tc);
-      tb_encdec  = 1;
-      tb_next    = 1;
+      tb_encdec  = 1'h1;
+      tb_next    = 1'h1;
       tb_block   = plaintext;
       #(2 * CLK_PERIOD);
       wait_ready();
       $display("*** TC%01d - encryption completed.", tc);
+      dump_dut_state();
 
       if (tb_result == ciphertext)
         $display("*** TC%01d correct ciphertext generated: 0x%016x",
@@ -287,13 +293,24 @@ module tb_prince_core();
           $display("*** TC%01d got:      0x%016x", tc, tb_result);
         end
 
+      $display("*** TC%01d - init for decryption started.", tc);
+      tb_init    = 1'h1;
+      tb_key     = key;
+      tb_encdec  = 1'h0;
+      #(CLK_PERIOD);
+      wait_ready();
+      $display("*** TC%01d - init for decryption completed.", tc);
+      dump_dut_state();
+      #(CLK_PERIOD);
+
       $display("*** TC%01d - decryption started.", tc);
       tb_block  = ciphertext;
-      tb_encdec = 0;
-      tb_next   = 1;
+      tb_encdec = 1'h0;
+      tb_next   = 1'h1;
       #(2 * CLK_PERIOD);
       wait_ready();
       $display("*** TC%01d - decryption completed.", tc);
+      dump_dut_state();
 
       if (tb_result == plaintext)
         $display("*** TC%01d correct plaintext generated: 0x%016x",

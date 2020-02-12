@@ -453,10 +453,19 @@ module prince_core(
 
       if (init_keys)
         begin
-          k0_new = key[127 : 64];
-          k1_new = key[63 : 0];
-          kp_new = {k0_new[0], k0_new[63 : 2]} ^ {k0_new[62 : 0], k0_new[63]};
-          k_we   = 1'h1;
+          k_we = 1'h1;
+          if (encdec)
+            begin
+              k0_new = key[127 : 64];
+              kp_new = {k0_new[0], k0_new[63 : 2], (k0_new[1] ^ k0_new[63])};
+              k1_new = key[63 : 0];
+            end
+          else
+            begin
+              kp_new = key[127 : 64];
+              k0_new = {kp_new[0], kp_new[63 : 2], (kp_new[1] ^ kp_new[63])};
+              k1_new = key[63 : 0] ^ ALPHA;
+            end
         end
 
       if (init_state)
