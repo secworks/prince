@@ -353,6 +353,10 @@ module prince_core(
   //----------------------------------------------------------------
   always @*
     begin : prince_core_dp
+
+      reg [63 : 0] core_input;
+      reg [63 : 0] core_output;
+
       reg [63 : 0] r0;
       reg [63 : 0] r1;
       reg [63 : 0] r2;
@@ -367,33 +371,44 @@ module prince_core(
       reg [63 : 0] r10;
       reg [63 : 0] r11;
 
-      r0 = 64'h0;
-      r1 = 64'h0;
-      r2 = 64'h0;
-      r3 = 64'h0;
-      r4 = 64'h0;
-      r5 = 64'h0;
-      mr = 64'h0;
-      r6 = 64'h0;
-      r7 = 64'h0;
-      r8 = 64'h0;
-      r9 = 64'h0;
-      r10 = 64'h0;
-      r11 = 64'h0;
 
-      state_new = 64'h0;
-      state_we  = 1'h0;
-      k0_new = 64'h0;
-      k1_new = 64'h0;
-      kp_new = 64'h0;
-      k_we   = 1'h0;
+      core_input  = 64'h0;
+      core_output = 64'h0;
+      r0          = 64'h0;
+      r1          = 64'h0;
+      r2          = 64'h0;
+      r3          = 64'h0;
+      r4          = 64'h0;
+      r5          = 64'h0;
+      mr          = 64'h0;
+      r6          = 64'h0;
+      r7          = 64'h0;
+      r8          = 64'h0;
+      r9          = 64'h0;
+      r10         = 64'h0;
+      r11         = 64'h0;
+      state_new   = 64'h0;
+      state_we    = 1'h0;
+      k0_new      = 64'h0;
+      k1_new      = 64'h0;
+      kp_new      = 64'h0;
+      k_we        = 1'h0;
 
       if (init_keys)
         begin
-          k0_new = key[127 : 64];
-          k1_new = key[63 : 0];
-          kp_new = {k0_new[0], k0_new[63 : 2]} ^ {k0_new[62 : 0], k0_new[63]};
-          k_we   = 1'h1;
+          k_we = 1'h1;
+          if (encdec)
+            begin
+              k0_new = key[127 : 64];
+              kp_new = {k0_new[0], k0_new[63 : 2], (k0_new[1] ^ k0_new[63])};
+              k1_new = key[63 : 0];
+            end
+          else
+            begin
+              kp_new = key[127 : 64];
+              k0_new = {kp_new[0], kp_new[63 : 2], (kp_new[1] ^ kp_new[63])};
+              k1_new = key[63 : 0] ^ ALPHA;
+            end
         end
 
       if (init_state)
@@ -404,7 +419,9 @@ module prince_core(
 
       if (update_state)
         begin
-          r0  = round0(state_reg, k0_reg);
+          core_input = state_reg ^ k0_reg;
+          r0  = round0(core_input, k1_reg);
+
           r1  = round(r0, k1_reg, 1);
           r2  = round(r1, k1_reg, 2);
           r3  = round(r2, k1_reg, 3);
@@ -420,8 +437,9 @@ module prince_core(
           r10 = iround(r9, k1_reg, 10);
 
           r11 = round11(r10, k1_reg);
+          core_output = r11 ^ kp_reg;
 
-          state_new = r11;
+          state_new = core_output;
           state_we  = 1'h1;
         end
     end // prince_core_dp
