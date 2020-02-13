@@ -102,6 +102,7 @@ module prince_core(
 
 
   //----------------------------------------------------------------
+  // Internal functions.
   //----------------------------------------------------------------
   function [3 : 0] sb(input [3 : 0] x);
     case(x)
@@ -124,18 +125,16 @@ module prince_core(
     endcase // case (x)
   endfunction // sb
 
-
-  function [63 : 0] sbox(input [63 : 0] x);
-    sbox = {sb(x[63 : 60]), sb(x[59 : 56]),
-            sb(x[55 : 52]), sb(x[51 : 48]),
-            sb(x[47 : 44]), sb(x[43 : 40]),
-            sb(x[39 : 36]), sb(x[35 : 32]),
-            sb(x[31 : 28]), sb(x[27 : 24]),
-            sb(x[23 : 20]), sb(x[19 : 16]),
-            sb(x[15 : 12]), sb(x[11 : 08]),
-            sb(x[07 : 04]), sb(x[03 : 00])};
-  endfunction // sbox
-
+  function [63 : 0] s(input [63 : 0] x);
+    s = {sb(x[63 : 60]), sb(x[59 : 56]),
+         sb(x[55 : 52]), sb(x[51 : 48]),
+         sb(x[47 : 44]), sb(x[43 : 40]),
+         sb(x[39 : 36]), sb(x[35 : 32]),
+         sb(x[31 : 28]), sb(x[27 : 24]),
+         sb(x[23 : 20]), sb(x[19 : 16]),
+         sb(x[15 : 12]), sb(x[11 : 08]),
+         sb(x[07 : 04]), sb(x[03 : 00])};
+  endfunction // s
 
   function [3 : 0] isb(input [3 : 0] x);
     case(x)
@@ -156,28 +155,18 @@ module prince_core(
       4'he: isb = 4'hc;
       4'hf: isb = 4'h1;
     endcase // case (x)
-  endfunction // sb
+  endfunction // isb
 
-
-  function [63 : 0] isbox(input [63 : 0] x);
-    isbox = {isb(x[63 : 60]), isb(x[59 : 56]),
-             isb(x[55 : 52]), isb(x[51 : 48]),
-             isb(x[47 : 44]), isb(x[43 : 40]),
-             isb(x[39 : 36]), isb(x[35 : 32]),
-             isb(x[31 : 28]), isb(x[27 : 24]),
-             isb(x[23 : 20]), isb(x[19 : 16]),
-             isb(x[15 : 12]), isb(x[11 : 08]),
-             isb(x[07 : 04]), isb(x[03 : 00])};
-  endfunction // sbox
-
-
-  function [63 : 0] sr(input [63 : 0] x);
-    sr = {x[00 * 4 +:4], x[05 * 4 +:4], x[10 * 4 +:4], x[15 * 4 +:4],
-          x[04 * 4 +:4], x[09 * 4 +:4], x[14 * 4 +:4], x[03 * 4 +:4],
-          x[08 * 4 +:4], x[13 * 4 +:4], x[02 * 4 +:4], x[07 * 4 +:4],
-          x[12 * 4 +:4], x[01 * 4 +:4], x[06 * 4 +:4], x[11 * 4 +:4]};
-  endfunction // sr
-
+  function [63 : 0] si(input [63 : 0] x);
+    si = {isb(x[63 : 60]), isb(x[59 : 56]),
+          isb(x[55 : 52]), isb(x[51 : 48]),
+          isb(x[47 : 44]), isb(x[43 : 40]),
+          isb(x[39 : 36]), isb(x[35 : 32]),
+          isb(x[31 : 28]), isb(x[27 : 24]),
+          isb(x[23 : 20]), isb(x[19 : 16]),
+          isb(x[15 : 12]), isb(x[11 : 08]),
+          isb(x[07 : 04]), isb(x[03 : 00])};
+  endfunction // si
 
   function [63 : 0] rc(input [3 : 0] round);
     begin
@@ -250,93 +239,42 @@ module prince_core(
       mp[18] = block[30] ^ block[22] ^ block[18];
       mp[17] = block[29] ^ block[25] ^ block[17];
       mp[16] = block[28] ^ block[24] ^ block[20];
-      mp[15] = block[11] ^ block[7]  ^ block[3];
-      mp[14] = block[14] ^ block[6]  ^ block[2];
-      mp[13] = block[13] ^ block[9]  ^ block[1];
-      mp[12] = block[12] ^ block[8]  ^ block[4];
-      mp[11] = block[15] ^ block[11] ^ block[7];
-      mp[10] = block[10] ^ block[6]  ^ block[2];
-      mp[9]  = block[13] ^ block[5]  ^ block[1];
-      mp[8]  = block[12] ^ block[8]  ^ block[0];
-      mp[7]  = block[15] ^ block[11] ^ block[3];
-      mp[6]  = block[14] ^ block[10] ^ block[6];
-      mp[5]  = block[9]  ^ block[5]  ^ block[1];
-      mp[4]  = block[12] ^ block[4]  ^ block[0];
-      mp[3]  = block[15] ^ block[7]  ^ block[3];
-      mp[2]  = block[14] ^ block[10] ^ block[2];
-      mp[1]  = block[13] ^ block[9]  ^ block[5];
-      mp[0]  = block[8]  ^ block[4]  ^ block[0];
+      mp[15] = block[11] ^ block[07] ^ block[03];
+      mp[14] = block[14] ^ block[06] ^ block[02];
+      mp[13] = block[13] ^ block[09] ^ block[01];
+      mp[12] = block[12] ^ block[08] ^ block[04];
+      mp[11] = block[15] ^ block[11] ^ block[07];
+      mp[10] = block[10] ^ block[06] ^ block[02];
+      mp[09] = block[13] ^ block[05] ^ block[01];
+      mp[08] = block[12] ^ block[08] ^ block[00];
+      mp[07] = block[15] ^ block[11] ^ block[03];
+      mp[06] = block[14] ^ block[10] ^ block[06];
+      mp[05] = block[09] ^ block[05] ^ block[01];
+      mp[04] = block[12] ^ block[04] ^ block[00];
+      mp[03] = block[15] ^ block[07] ^ block[03];
+      mp[02] = block[14] ^ block[10] ^ block[02];
+      mp[01] = block[13] ^ block[09] ^ block[05];
+      mp[00] = block[08] ^ block[04] ^ block[00];
     end
   endfunction // mp
 
-  function [63 : 0] imp(input [63 : 0] block);
+  function [63 : 0] m(input [63 : 0] b);
     begin
-      imp[63] = block[59] ^ block[55] ^ block[51];
-      imp[62] = block[62] ^ block[54] ^ block[50];
-      imp[61] = block[61] ^ block[57] ^ block[49];
-      imp[60] = block[60] ^ block[56] ^ block[52];
-      imp[59] = block[63] ^ block[59] ^ block[55];
-      imp[58] = block[58] ^ block[54] ^ block[50];
-      imp[57] = block[61] ^ block[53] ^ block[49];
-      imp[56] = block[60] ^ block[56] ^ block[48];
-      imp[55] = block[63] ^ block[59] ^ block[51];
-      imp[54] = block[62] ^ block[58] ^ block[54];
-      imp[53] = block[57] ^ block[53] ^ block[49];
-      imp[52] = block[60] ^ block[52] ^ block[48];
-      imp[51] = block[63] ^ block[55] ^ block[51];
-      imp[50] = block[62] ^ block[58] ^ block[50];
-      imp[49] = block[61] ^ block[57] ^ block[53];
-      imp[48] = block[56] ^ block[52] ^ block[48];
-      imp[47] = block[47] ^ block[43] ^ block[39];
-      imp[46] = block[42] ^ block[38] ^ block[34];
-      imp[45] = block[45] ^ block[37] ^ block[33];
-      imp[44] = block[44] ^ block[40] ^ block[32];
-      imp[43] = block[47] ^ block[43] ^ block[35];
-      imp[42] = block[46] ^ block[42] ^ block[38];
-      imp[41] = block[41] ^ block[37] ^ block[33];
-      imp[40] = block[44] ^ block[36] ^ block[32];
-      imp[39] = block[47] ^ block[39] ^ block[35];
-      imp[38] = block[46] ^ block[42] ^ block[34];
-      imp[37] = block[45] ^ block[41] ^ block[37];
-      imp[36] = block[40] ^ block[36] ^ block[32];
-      imp[35] = block[43] ^ block[39] ^ block[35];
-      imp[34] = block[46] ^ block[38] ^ block[34];
-      imp[33] = block[45] ^ block[41] ^ block[33];
-      imp[32] = block[44] ^ block[40] ^ block[36];
-      imp[31] = block[31] ^ block[27] ^ block[23];
-      imp[30] = block[26] ^ block[22] ^ block[18];
-      imp[29] = block[29] ^ block[21] ^ block[17];
-      imp[28] = block[28] ^ block[24] ^ block[16];
-      imp[27] = block[31] ^ block[27] ^ block[19];
-      imp[26] = block[30] ^ block[26] ^ block[22];
-      imp[25] = block[25] ^ block[21] ^ block[17];
-      imp[24] = block[28] ^ block[20] ^ block[16];
-      imp[23] = block[31] ^ block[23] ^ block[19];
-      imp[22] = block[30] ^ block[26] ^ block[18];
-      imp[21] = block[29] ^ block[25] ^ block[21];
-      imp[20] = block[24] ^ block[20] ^ block[16];
-      imp[19] = block[27] ^ block[23] ^ block[19];
-      imp[18] = block[30] ^ block[22] ^ block[18];
-      imp[17] = block[29] ^ block[25] ^ block[17];
-      imp[16] = block[28] ^ block[24] ^ block[20];
-      imp[15] = block[11] ^ block[7]  ^ block[3];
-      imp[14] = block[14] ^ block[6]  ^ block[2];
-      imp[13] = block[13] ^ block[9]  ^ block[1];
-      imp[12] = block[12] ^ block[8]  ^ block[4];
-      imp[11] = block[15] ^ block[11] ^ block[7];
-      imp[10] = block[10] ^ block[6]  ^ block[2];
-      imp[9]  = block[13] ^ block[5]  ^ block[1];
-      imp[8]  = block[12] ^ block[8]  ^ block[0];
-      imp[7]  = block[15] ^ block[11] ^ block[3];
-      imp[6]  = block[14] ^ block[10] ^ block[6];
-      imp[5]  = block[9]  ^ block[5]  ^ block[1];
-      imp[4]  = block[12] ^ block[4]  ^ block[0];
-      imp[3]  = block[15] ^ block[7]  ^ block[3];
-      imp[2]  = block[14] ^ block[10] ^ block[2];
-      imp[1]  = block[13] ^ block[9]  ^ block[5];
-      imp[0]  = block[8]  ^ block[4]  ^ block[0];
+      m = {b[63 : 60], b[43 : 40], b[23 : 20], b[03 : 00],
+           b[47 : 44], b[27 : 24], b[07 : 04], b[51 : 48],
+           b[31 : 28], b[11 : 08], b[55 : 52], b[35 : 32],
+           b[15 : 12], b[59 : 56], b[39 : 36], b[19 : 16]};
     end
-  endfunction // imp
+  endfunction // m
+
+  function [63 : 0] mi(input [63 : 0] b);
+    begin
+      mi = {b[63 : 60], b[11 : 08], b[23 : 20], b[35 : 32],
+            b[47 : 44], b[59 : 56], b[07 : 04], b[19 : 16],
+            b[31 : 28], b[43 : 40], b[55 : 52], b[03 : 00],
+            b[15 : 12], b[27 : 24], b[39 : 36], b[51 : 48]};
+    end
+  endfunction // m
 
   function [63 : 0] round0(input [63 : 0] block, input [63 : 0] key);
     begin
@@ -346,26 +284,25 @@ module prince_core(
 
   function [63 : 0] round11(input [63 : 0] block, input [63 : 0] key);
     begin
-      round11 = block;
+      round11 =  block ^ key ^ rc(11);;
     end
   endfunction // round11
 
   function [63 : 0] middle(input [63 : 0] block);
     begin
-      middle = block;
+      middle = si(mi(mp(s(block))));
     end
   endfunction // middle
 
   function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
-      round = mp(sbox(block)) ^ rc(n) ^ key;
+      round = m(mp(s(block))) ^ rc(n) ^ key;
     end
   endfunction // round
 
-
   function [63 : 0] iround(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
-      iround = isbox(imp(rc(n) ^ key ^ block));
+      iround = si(mi(m(rc(n) ^ key ^ block)));
     end
   endfunction // iround
 
