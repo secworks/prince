@@ -145,7 +145,8 @@ module tb_prince_core();
                dut.prince_core_dp.r0, dut.prince_core_dp.r1, dut.prince_core_dp.r2);
       $display("r3: 0x%08x, r4:  0x%08x, r5:  0x%08x",
                dut.prince_core_dp.r3, dut.prince_core_dp.r4, dut.prince_core_dp.r5);
-      $display("mr: 0x%08x", dut.prince_core_dp.mr);
+      $display("ms: 0x%08x, mp:  0x%08x, si:  0x%08x",
+               dut.prince_core_dp.ms, dut.prince_core_dp.mp, dut.prince_core_dp.si);
       $display("r6: 0x%08x, r7:  0x%08x, r8:  0x%08x",
                dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
