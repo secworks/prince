@@ -314,7 +314,8 @@ module prince_core(
 
   function [63 : 0] iround(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
-      iround = si(mi(m(rc(n) ^ key ^ block)));
+      iround = mi(m(rc(n) ^ key ^ block));
+//      iround = si(mi(m(rc(n) ^ key ^ block)));
     end
   endfunction // iround
 
@@ -452,7 +453,7 @@ module prince_core(
           mp = middlemp(ms);
           si = middlesi(mp);
 
-          r6  = iround(mr, k1_reg, 6);
+          r6  = iround(si, k1_reg, 6);
           r7  = iround(r6, k1_reg, 7);
           r8  = iround(r7, k1_reg, 8);
           r9  = iround(r8, k1_reg, 9);
