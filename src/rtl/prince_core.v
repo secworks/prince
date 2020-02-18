@@ -295,29 +295,17 @@ module prince_core(
     end
   endfunction // round11
 
-  function [63 : 0] middles(input [63 : 0] b);
-    begin
-      middles = s(b);
-    end
-  endfunction // middles
-
-  function [63 : 0] middlemp(input [63 : 0] b);
-    begin
-      middlemp = mp(b);
-    end
-  endfunction // middlemp
-
-  function [63 : 0] middlesi(input [63 : 0] b);
-    begin
-      middlesi = si(b);
-    end
-  endfunction // middlesi
-
   function [63 : 0] round(input [63 : 0] b, input [63 : 0] k, input [3 : 0] n);
     begin
       round = m(s(b)) ^ rc(n) ^ k;
     end
   endfunction // round
+
+  function [63 : 0] middle_round(input [63 : 0] b);
+    begin
+      middle_round = si(mp(s(b)));
+    end
+  endfunction // middle_round
 
   function [63 : 0] iround(input [63 : 0] b, input [63 : 0] k, input [3 : 0] n);
     begin
@@ -390,11 +378,6 @@ module prince_core(
       reg [63 : 0] r10;
       reg [63 : 0] r11;
 
-      reg [63 : 0] ms;
-      reg [63 : 0] mp;
-      reg [63 : 0] si;
-
-
       core_input  = 64'h0;
       core_output = 64'h0;
       r0          = 64'h0;
@@ -416,10 +399,6 @@ module prince_core(
       k1_new      = 64'h0;
       kp_new      = 64'h0;
       k_we        = 1'h0;
-
-      ms          = 64'h0;
-      mp          = 64'h0;
-      si          = 64'h0;
 
       if (init_keys)
         begin
@@ -455,11 +434,9 @@ module prince_core(
           r4  = round(r3, k1_reg, 4);
           r5  = round(r4, k1_reg, 5);
 
-          ms = middles(r5);
-          mp = middlemp(ms);
-          si = middlesi(mp);
+          mr = middle_round(r5);
 
-          r6  = iround(si, k1_reg, 6);
+          r6  = iround(mr, k1_reg, 6);
           r7  = iround(r6, k1_reg, 7);
           r8  = iround(r7, k1_reg, 8);
           r9  = iround(r8, k1_reg, 9);
