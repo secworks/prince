@@ -2,7 +2,10 @@
 The Prince lightweight block cipher in Verilog.
 
 ## Status
-Not completed. Does ***NOT*** worlk. Do. Not. Use.
+Not completed. Do. Not. Use.
+
+The core simulated correctly, but has not yet been implemented in real
+hardware.
 
 
 ## Introduction
