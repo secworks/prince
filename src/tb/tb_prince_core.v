@@ -366,10 +366,10 @@ module tb_prince_core();
       test(6, 128'h00112233_44556677_8899aabb_ccddeeff,
            64'h01234567_89abcdef, 64'hd6dcb597_8de756ee);
 
-      test(7, 128'h01122334_4556678_899aabbc_cddeeff0,
+      test(7, 128'h01122334_45566778_899aabbc_cddeeff0,
            64'h01234567_89abcdef, 64'h392f599f_46761cd3);
 
-      test(8, 128'h01122334_4556678_899aabbc_cddeeff0,
+      test(8, 128'h01122334_45566778_899aabbc_cddeeff0,
            64'hf0123456_789abcde, 64'h4fb5e332_b9b409bb);
 
       test(9, 128'hd8cdb780_70b4c55a_818665aa_0d02dfda,
