@@ -259,20 +259,26 @@ module prince_core(
   endfunction // mp
 
   function [63 : 0] m(input [63 : 0] b);
-    begin
-      m = {b[63 : 60], b[43 : 40], b[23 : 20], b[03 : 00],
-           b[47 : 44], b[27 : 24], b[07 : 04], b[51 : 48],
-           b[31 : 28], b[11 : 08], b[55 : 52], b[35 : 32],
-           b[15 : 12], b[59 : 56], b[39 : 36], b[19 : 16]};
+    begin : m
+      reg [63 : 0] t;
+      t = mp(b);
+
+      m = {t[63 : 60], t[43 : 40], t[23 : 20], t[03 : 00],
+           t[47 : 44], t[27 : 24], t[07 : 04], t[51 : 48],
+           t[31 : 28], t[11 : 08], t[55 : 52], t[35 : 32],
+           t[15 : 12], t[59 : 56], t[39 : 36], t[19 : 16]};
     end
   endfunction // m
 
   function [63 : 0] mi(input [63 : 0] b);
-    begin
-      mi = {b[63 : 60], b[11 : 08], b[23 : 20], b[35 : 32],
-            b[47 : 44], b[59 : 56], b[07 : 04], b[19 : 16],
-            b[31 : 28], b[43 : 40], b[55 : 52], b[03 : 00],
-            b[15 : 12], b[27 : 24], b[39 : 36], b[51 : 48]};
+    begin : mi
+      reg [63 : 0] t;
+      t = mp(b);
+
+      mi = {t[63 : 60], t[11 : 08], t[23 : 20], t[35 : 32],
+            t[47 : 44], t[59 : 56], t[07 : 04], t[19 : 16],
+            t[31 : 28], t[43 : 40], t[55 : 52], t[03 : 00],
+            t[15 : 12], t[27 : 24], t[39 : 36], t[51 : 48]};
     end
   endfunction // m
 
@@ -308,14 +314,14 @@ module prince_core(
 
   function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
-      round = m(mp(s(block))) ^ rc(n) ^ key;
+      round = m(s(block)) ^ rc(n) ^ key;
     end
   endfunction // round
 
   function [63 : 0] iround(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
     begin
-      iround = mi(m(rc(n) ^ key ^ block));
-//      iround = si(mi(m(rc(n) ^ key ^ block)));
+      iround = rc(n) ^ key ^ block;
+//      iround = si(mi(rc(n) ^ key ^ block));
     end
   endfunction // iround
 
