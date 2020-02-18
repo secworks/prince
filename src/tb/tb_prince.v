@@ -277,101 +277,84 @@ module tb_prince();
 
 
   //----------------------------------------------------------------
-  // tc1()
+  // testr()
   //----------------------------------------------------------------
-  task tc1;
-    begin : tc1
-      reg [31 : 0] res0;
-      reg [31 : 0] res1;
+  task test(input integer testcase, input [127 : 0] key,
+            input [63 : 0] plaintext, input [63 : 0] ciphertext);
+    begin : test
+      reg [63 : 0] enc_res;
+      reg [63 : 0] dec_res;
 
       tc_ctr = tc_ctr + 1;
 
-      $display("*** TC1 - encryption started.");
+      $display("*** TC%d started.", testcase);
 
-      write_word(ADDR_KEY0, 32'h00010203);
-      write_word(ADDR_KEY1, 32'h04050607);
-      write_word(ADDR_KEY2, 32'h08090a0b);
-      write_word(ADDR_KEY3, 32'h0c0d0e0f);
+      // Init.
+      write_word(ADDR_KEY0, key[031 : 00]);
+      write_word(ADDR_KEY1, key[063 : 32]);
+      write_word(ADDR_KEY2, key[095 : 64]);
+      write_word(ADDR_KEY3, key[127 : 96]);
+      write_word(ADDR_CTRL, 32'h2);
+      $display("*** TC%d - key init started.", testcase);
+      wait_ready();
+      $display("*** TC%d - key init completed.", testcase);
 
-      write_word(ADDR_BLOCK0, 32'h41424344);
-      write_word(ADDR_BLOCK1, 32'h45464748);
-
+      // Encryption.
+      write_word(ADDR_BLOCK0, plaintext[31 : 00]);
+      write_word(ADDR_BLOCK1, plaintext[63 : 32]);
       write_word(ADDR_CONFIG, 32'h1);
       write_word(ADDR_CTRL, 32'h2);
-
+      $display("*** TC%d - encryption started.", testcase);
       wait_ready();
+      $display("*** TC%d - encryption completed.", testcase);
 
       read_word(ADDR_RESULT0);
-      res0 = read_data;
+      enc_res[31 : 0] = read_data;
       read_word(ADDR_RESULT1);
-      res1 = read_data;
+      enc_res[63 : 32] = read_data;
 
-      if ({res0, res1} == 64'h497df3d072612cb5)
+      if (enc_res == ciphertext)
         begin
-          $display("*** Correct result received.");
+          $display("*** Correct ciphertext received.");
         end
       else
         begin
-          $display("*** Incorrect result received. Expexted 64'h497df3d072612cb5, got 0x%016x", {res0, res1});
+          $display("*** Incorrect ciphertext received. Expected 0x%016x, got 0x%016x", ciphertext, enc_res);
           error_ctr = error_ctr + 1;
         end
 
-      $display("*** TC1 completed.");
-      $display("");
-    end
-  endtask // tc1
-
-
-  //----------------------------------------------------------------
-  // tc2()
-  //----------------------------------------------------------------
-  task tc2;
-    begin : tc2
-      reg [31 : 0] res0;
-      reg [31 : 0] res1;
-
-      tc_ctr = tc_ctr + 1;
-
-      $display("*** TC2 - decryption started.");
-
-      write_word(ADDR_KEY0, 32'h00010203);
-      write_word(ADDR_KEY1, 32'h04050607);
-      write_word(ADDR_KEY2, 32'h08090a0b);
-      write_word(ADDR_KEY3, 32'h0c0d0e0f);
-
-      write_word(ADDR_BLOCK0, 32'h497df3d0);
-      write_word(ADDR_BLOCK1, 32'h72612cb5);
-
+      // Decryption.
+      write_word(ADDR_BLOCK0, ciphertext[31 : 00]);
+      write_word(ADDR_BLOCK1, ciphertext[63 : 32]);
       write_word(ADDR_CONFIG, 32'h0);
       write_word(ADDR_CTRL, 32'h2);
-
+      $display("*** TC%d - decryption started.", testcase);
       wait_ready();
+      $display("*** TC%d - decryption started.", testcase);
 
       read_word(ADDR_RESULT0);
-      res0 = read_data;
+      dec_res[31 : 0] = read_data;
       read_word(ADDR_RESULT1);
-      res1 = read_data;
+      dec_res[63 : 32] = read_data;
 
-      if ({res0, res1} == 64'h4142434445464748)
+      if (dec_res == plaintext)
         begin
-          $display("*** Correct result received.");
+          $display("*** Correct plaintext received.");
         end
       else
         begin
-          $display("*** Incorrect result received. Expexted 64'h4142434445464748, got 0x%016x", {res0, res1});
+          $display("*** Incorrect plaintext received. Expected 0x%016x, got 0x%016x", plaintext, dec_res);
           error_ctr = error_ctr + 1;
         end
 
-      $display("*** TC2 completed.");
+      $display("*** TC%d completed.", testcase);
       $display("");
     end
-  endtask // tc2
+  endtask // test
 
 
   //----------------------------------------------------------------
-  // prince_core_test
-  //
-  // Test vectors from:
+  // prince_test
   //----------------------------------------------------------------
   initial
     begin : prince_test
@@ -382,8 +365,32 @@ module tb_prince();
       init_sim();
       reset_dut();
 
-      tc1();
-      tc2();
+      test(1, 128'h00000000_00000000_00000000_00000000,
+           64'h00000000_00000000, 64'h818665aa_0d02dfda);
+
+      test(2, 128'h00000000_00000000_00000000_00000000,
+           64'hffffffff_ffffffff, 64'h604ae6ca_03c20ada);
+
+      test(3, 128'hffffffff_ffffffff_00000000_00000000,
+           64'h00000000_00000000, 64'h9fb51935_fc3df524);
+
+      test(4, 128'h00000000_00000000_ffffffff_ffffffff,
+           64'h00000000_00000000, 64'h78a54cbe_737bb7ef);
+
+      test(5, 128'h00000000_00000000_fedcba98_76543210,
+           64'h01234567_89abcdef, 64'hae25ad3c_a8fa9ccf);
+
+      test(6, 128'h00112233_44556677_8899aabb_ccddeeff,
+           64'h01234567_89abcdef, 64'hd6dcb597_8de756ee);
+
+      test(7, 128'h01122334_45566778_899aabbc_cddeeff0,
+           64'h01234567_89abcdef, 64'h392f599f_46761cd3);
+
+      test(8, 128'h01122334_45566778_899aabbc_cddeeff0,
+           64'hf0123456_789abcde, 64'h4fb5e332_b9b409bb);
+
+      test(9, 128'hd8cdb780_70b4c55a_818665aa_0d02dfda,
+           64'h69c4e0d8_6a7b0430, 64'h43c6b256_d79de7e8);
 
       display_test_result();
       $display("");
