@@ -15,4 +15,4 @@ latency block cipher suitable for Iot and embedded systems. The key is
 
 
 ## Implementation
-The implementation focus in size and will have iterative rounds.
+The implementation focus is on size and will have iterative rounds.
