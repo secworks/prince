@@ -189,77 +189,77 @@ module prince_core(
     end
   endfunction // rc
 
-  function [63 : 0] mp(input [63 : 0] block);
+  function [63 : 0] mp(input [63 : 0] b);
     begin
-      mp[63] = block[59] ^ block[55] ^ block[51];
-      mp[62] = block[62] ^ block[54] ^ block[50];
-      mp[61] = block[61] ^ block[57] ^ block[49];
-      mp[60] = block[60] ^ block[56] ^ block[52];
-      mp[59] = block[63] ^ block[59] ^ block[55];
-      mp[58] = block[58] ^ block[54] ^ block[50];
-      mp[57] = block[61] ^ block[53] ^ block[49];
-      mp[56] = block[60] ^ block[56] ^ block[48];
-      mp[55] = block[63] ^ block[59] ^ block[51];
-      mp[54] = block[62] ^ block[58] ^ block[54];
-      mp[53] = block[57] ^ block[53] ^ block[49];
-      mp[52] = block[60] ^ block[52] ^ block[48];
-      mp[51] = block[63] ^ block[55] ^ block[51];
-      mp[50] = block[62] ^ block[58] ^ block[50];
-      mp[49] = block[61] ^ block[57] ^ block[53];
-      mp[48] = block[56] ^ block[52] ^ block[48];
-      mp[47] = block[47] ^ block[43] ^ block[39];
-      mp[46] = block[42] ^ block[38] ^ block[34];
-      mp[45] = block[45] ^ block[37] ^ block[33];
-      mp[44] = block[44] ^ block[40] ^ block[32];
-      mp[43] = block[47] ^ block[43] ^ block[35];
-      mp[42] = block[46] ^ block[42] ^ block[38];
-      mp[41] = block[41] ^ block[37] ^ block[33];
-      mp[40] = block[44] ^ block[36] ^ block[32];
-      mp[39] = block[47] ^ block[39] ^ block[35];
-      mp[38] = block[46] ^ block[42] ^ block[34];
-      mp[37] = block[45] ^ block[41] ^ block[37];
-      mp[36] = block[40] ^ block[36] ^ block[32];
-      mp[35] = block[43] ^ block[39] ^ block[35];
-      mp[34] = block[46] ^ block[38] ^ block[34];
-      mp[33] = block[45] ^ block[41] ^ block[33];
-      mp[32] = block[44] ^ block[40] ^ block[36];
-      mp[31] = block[31] ^ block[27] ^ block[23];
-      mp[30] = block[26] ^ block[22] ^ block[18];
-      mp[29] = block[29] ^ block[21] ^ block[17];
-      mp[28] = block[28] ^ block[24] ^ block[16];
-      mp[27] = block[31] ^ block[27] ^ block[19];
-      mp[26] = block[30] ^ block[26] ^ block[22];
-      mp[25] = block[25] ^ block[21] ^ block[17];
-      mp[24] = block[28] ^ block[20] ^ block[16];
-      mp[23] = block[31] ^ block[23] ^ block[19];
-      mp[22] = block[30] ^ block[26] ^ block[18];
-      mp[21] = block[29] ^ block[25] ^ block[21];
-      mp[20] = block[24] ^ block[20] ^ block[16];
-      mp[19] = block[27] ^ block[23] ^ block[19];
-      mp[18] = block[30] ^ block[22] ^ block[18];
-      mp[17] = block[29] ^ block[25] ^ block[17];
-      mp[16] = block[28] ^ block[24] ^ block[20];
-      mp[15] = block[11] ^ block[07] ^ block[03];
-      mp[14] = block[14] ^ block[06] ^ block[02];
-      mp[13] = block[13] ^ block[09] ^ block[01];
-      mp[12] = block[12] ^ block[08] ^ block[04];
-      mp[11] = block[15] ^ block[11] ^ block[07];
-      mp[10] = block[10] ^ block[06] ^ block[02];
-      mp[09] = block[13] ^ block[05] ^ block[01];
-      mp[08] = block[12] ^ block[08] ^ block[00];
-      mp[07] = block[15] ^ block[11] ^ block[03];
-      mp[06] = block[14] ^ block[10] ^ block[06];
-      mp[05] = block[09] ^ block[05] ^ block[01];
-      mp[04] = block[12] ^ block[04] ^ block[00];
-      mp[03] = block[15] ^ block[07] ^ block[03];
-      mp[02] = block[14] ^ block[10] ^ block[02];
-      mp[01] = block[13] ^ block[09] ^ block[05];
-      mp[00] = block[08] ^ block[04] ^ block[00];
+      mp[63] = b[59] ^ b[55] ^ b[51];
+      mp[62] = b[62] ^ b[54] ^ b[50];
+      mp[61] = b[61] ^ b[57] ^ b[49];
+      mp[60] = b[60] ^ b[56] ^ b[52];
+      mp[59] = b[63] ^ b[59] ^ b[55];
+      mp[58] = b[58] ^ b[54] ^ b[50];
+      mp[57] = b[61] ^ b[53] ^ b[49];
+      mp[56] = b[60] ^ b[56] ^ b[48];
+      mp[55] = b[63] ^ b[59] ^ b[51];
+      mp[54] = b[62] ^ b[58] ^ b[54];
+      mp[53] = b[57] ^ b[53] ^ b[49];
+      mp[52] = b[60] ^ b[52] ^ b[48];
+      mp[51] = b[63] ^ b[55] ^ b[51];
+      mp[50] = b[62] ^ b[58] ^ b[50];
+      mp[49] = b[61] ^ b[57] ^ b[53];
+      mp[48] = b[56] ^ b[52] ^ b[48];
+      mp[47] = b[47] ^ b[43] ^ b[39];
+      mp[46] = b[42] ^ b[38] ^ b[34];
+      mp[45] = b[45] ^ b[37] ^ b[33];
+      mp[44] = b[44] ^ b[40] ^ b[32];
+      mp[43] = b[47] ^ b[43] ^ b[35];
+      mp[42] = b[46] ^ b[42] ^ b[38];
+      mp[41] = b[41] ^ b[37] ^ b[33];
+      mp[40] = b[44] ^ b[36] ^ b[32];
+      mp[39] = b[47] ^ b[39] ^ b[35];
+      mp[38] = b[46] ^ b[42] ^ b[34];
+      mp[37] = b[45] ^ b[41] ^ b[37];
+      mp[36] = b[40] ^ b[36] ^ b[32];
+      mp[35] = b[43] ^ b[39] ^ b[35];
+      mp[34] = b[46] ^ b[38] ^ b[34];
+      mp[33] = b[45] ^ b[41] ^ b[33];
+      mp[32] = b[44] ^ b[40] ^ b[36];
+      mp[31] = b[31] ^ b[27] ^ b[23];
+      mp[30] = b[26] ^ b[22] ^ b[18];
+      mp[29] = b[29] ^ b[21] ^ b[17];
+      mp[28] = b[28] ^ b[24] ^ b[16];
+      mp[27] = b[31] ^ b[27] ^ b[19];
+      mp[26] = b[30] ^ b[26] ^ b[22];
+      mp[25] = b[25] ^ b[21] ^ b[17];
+      mp[24] = b[28] ^ b[20] ^ b[16];
+      mp[23] = b[31] ^ b[23] ^ b[19];
+      mp[22] = b[30] ^ b[26] ^ b[18];
+      mp[21] = b[29] ^ b[25] ^ b[21];
+      mp[20] = b[24] ^ b[20] ^ b[16];
+      mp[19] = b[27] ^ b[23] ^ b[19];
+      mp[18] = b[30] ^ b[22] ^ b[18];
+      mp[17] = b[29] ^ b[25] ^ b[17];
+      mp[16] = b[28] ^ b[24] ^ b[20];
+      mp[15] = b[11] ^ b[07] ^ b[03];
+      mp[14] = b[14] ^ b[06] ^ b[02];
+      mp[13] = b[13] ^ b[09] ^ b[01];
+      mp[12] = b[12] ^ b[08] ^ b[04];
+      mp[11] = b[15] ^ b[11] ^ b[07];
+      mp[10] = b[10] ^ b[06] ^ b[02];
+      mp[09] = b[13] ^ b[05] ^ b[01];
+      mp[08] = b[12] ^ b[08] ^ b[00];
+      mp[07] = b[15] ^ b[11] ^ b[03];
+      mp[06] = b[14] ^ b[10] ^ b[06];
+      mp[05] = b[09] ^ b[05] ^ b[01];
+      mp[04] = b[12] ^ b[04] ^ b[00];
+      mp[03] = b[15] ^ b[07] ^ b[03];
+      mp[02] = b[14] ^ b[10] ^ b[02];
+      mp[01] = b[13] ^ b[09] ^ b[05];
+      mp[00] = b[08] ^ b[04] ^ b[00];
     end
   endfunction // mp
 
   function [63 : 0] m(input [63 : 0] b);
-    begin : m
+    begin : m_func
       reg [63 : 0] t;
       t = mp(b);
 
@@ -271,7 +271,7 @@ module prince_core(
   endfunction // m
 
   function [63 : 0] mi(input [63 : 0] b);
-    begin : mi
+    begin : mi_func
       reg [63 : 0] t;
 
       t = {b[63 : 60], b[11 : 08], b[23 : 20], b[35 : 32],
@@ -283,45 +283,45 @@ module prince_core(
     end
   endfunction // m
 
-  function [63 : 0] round0(input [63 : 0] block, input [63 : 0] key);
+  function [63 : 0] round0(input [63 : 0] b, input [63 : 0] k);
     begin
-      round0 = block ^ key ^ rc(0);
+      round0 = b ^ k ^ rc(0);
     end
   endfunction // round0
 
-  function [63 : 0] round11(input [63 : 0] block, input [63 : 0] key);
+  function [63 : 0] round11(input [63 : 0] b, input [63 : 0] k);
     begin
-      round11 =  block ^ key ^ rc(11);;
+      round11 =  b ^ k ^ rc(11);;
     end
   endfunction // round11
 
-  function [63 : 0] middles(input [63 : 0] block);
+  function [63 : 0] middles(input [63 : 0] b);
     begin
-      middles = s(block);
+      middles = s(b);
     end
   endfunction // middles
 
-  function [63 : 0] middlemp(input [63 : 0] block);
+  function [63 : 0] middlemp(input [63 : 0] b);
     begin
-      middlemp = mp(block);
+      middlemp = mp(b);
     end
   endfunction // middlemp
 
-  function [63 : 0] middlesi(input [63 : 0] block);
+  function [63 : 0] middlesi(input [63 : 0] b);
     begin
-      middlesi = si(block);
+      middlesi = si(b);
     end
   endfunction // middlesi
 
-  function [63 : 0] round(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
+  function [63 : 0] round(input [63 : 0] b, input [63 : 0] k, input [3 : 0] n);
     begin
-      round = m(s(block)) ^ rc(n) ^ key;
+      round = m(s(b)) ^ rc(n) ^ k;
     end
   endfunction // round
 
-  function [63 : 0] iround(input [63 : 0] block, input [63 : 0] key, input [3 : 0] n);
+  function [63 : 0] iround(input [63 : 0] b, input [63 : 0] k, input [3 : 0] n);
     begin
-      iround = si(mi(rc(n) ^ key ^ block));
+      iround = si(mi(rc(n) ^ k ^ b));
     end
   endfunction // iround
 
