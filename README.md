@@ -2,10 +2,11 @@
 The Prince lightweight block cipher in Verilog.
 
 ## Status
-Not completed. Do. Not. Use.
+Core is functionally completed. Both core and top level provides correct
+results for all test vectors. The core is lint clean. The core has not
+yet been implemented in hardware.
 
-The core simulated correctly, but has not yet been implemented in real
-hardware.
+Use with caution.
 
 
 ## Introduction
@@ -15,4 +16,7 @@ latency block cipher suitable for Iot and embedded systems. The key is
 
 
 ## Implementation
-The implementation focus is on size and will have iterative rounds.
+The implementation is currently a single cyle designs with all rounds as
+functions in the datapath. This will replicate the logic needed and will
+create a low latency implementation. Right now the max clock frequency
+is not known. Or the total size of the design.
