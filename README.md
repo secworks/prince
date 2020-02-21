@@ -20,3 +20,17 @@ The implementation is currently a single cyle designs with all rounds as
 functions in the datapath. This will replicate the logic needed and will
 create a low latency implementation. Right now the max clock frequency
 is not known. Or the total size of the design.
+
+## Implementation results
+## Altera Cyclone V
+Device: 5CGXFC7C7F23C8
+
+ALMs: 950
+
+Regs: 456
+
+Block Ram: 0
+
+DSPs: 0
+
+Fmax: 29.35 MHz (!)
