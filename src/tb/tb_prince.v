@@ -55,7 +55,7 @@ module tb_prince();
   localparam ADDR_VERSION      = 8'h02;
 
   localparam ADDR_CTRL         = 8'h08;
-  localparam CTRL_NEXT_BIT     = 1;
+  localparam CTRL_NEXT_BIT     = 0;
 
   localparam ADDR_STATUS       = 8'h09;
   localparam STATUS_READY_BIT  = 0;
@@ -149,6 +149,18 @@ module tb_prince();
       $display("------------");
       $display("Cycle: %08d", cycle_ctr);
       $display("Inputs and outputs:");
+      $display("");
+      $display("Core inputs and outputs:");
+      $display("next: 0x%01x, encdec: 0x%01x, ready: 0x%01x",
+               dut.core.next, dut.core.encdec, dut.core.ready);
+      $display("key:    0x%032x", dut.core.key);
+      $display("block:  0x%016x", dut.core.block);
+      $display("result: 0x%016x", dut.core.result);
+      $display("");
+      $display("Core state:");
+      $display("k0: 0x%016x", dut.core.k0_reg);
+      $display("k1: 0x%016x", dut.core.k1_reg);
+      $display("kp: 0x%016x", dut.core.kp_reg);
       $display("");
     end
   endtask // dump_dut_state
@@ -287,26 +299,21 @@ module tb_prince();
 
       tc_ctr = tc_ctr + 1;
 
-      $display("*** TC%d started.", testcase);
+      $display("");
+      $display("*** TC%02d started.", testcase);
 
-      // Init.
+      // Encryption.
       write_word(ADDR_KEY0, key[031 : 00]);
       write_word(ADDR_KEY1, key[063 : 32]);
       write_word(ADDR_KEY2, key[095 : 64]);
       write_word(ADDR_KEY3, key[127 : 96]);
-      write_word(ADDR_CTRL, 32'h2);
-      $display("*** TC%d - key init started.", testcase);
-      wait_ready();
-      $display("*** TC%d - key init completed.", testcase);
-
-      // Encryption.
+      write_word(ADDR_CONFIG, 32'h1);
       write_word(ADDR_BLOCK0, plaintext[31 : 00]);
       write_word(ADDR_BLOCK1, plaintext[63 : 32]);
-      write_word(ADDR_CONFIG, 32'h1);
-      write_word(ADDR_CTRL, 32'h2);
-      $display("*** TC%d - encryption started.", testcase);
+      write_word(ADDR_CTRL, 32'h1);
+      $display("*** TC%02d - encryption started.", testcase);
       wait_ready();
-      $display("*** TC%d - encryption completed.", testcase);
+      $display("*** TC%02d - encryption completed.", testcase);
 
       read_word(ADDR_RESULT0);
       enc_res[31 : 0] = read_data;
@@ -322,15 +329,16 @@ module tb_prince();
           $display("*** Incorrect ciphertext received. Expected 0x%016x, got 0x%016x", ciphertext, enc_res);
           error_ctr = error_ctr + 1;
         end
+      $display("");
 
       // Decryption.
       write_word(ADDR_BLOCK0, ciphertext[31 : 00]);
       write_word(ADDR_BLOCK1, ciphertext[63 : 32]);
       write_word(ADDR_CONFIG, 32'h0);
-      write_word(ADDR_CTRL, 32'h2);
-      $display("*** TC%d - decryption started.", testcase);
+      write_word(ADDR_CTRL, 32'h1);
+      $display("*** TC%02d - decryption started.", testcase);
       wait_ready();
-      $display("*** TC%d - decryption started.", testcase);
+      $display("*** TC%02d - decryption started.", testcase);
 
       read_word(ADDR_RESULT0);
       dec_res[31 : 0] = read_data;
@@ -347,7 +355,7 @@ module tb_prince();
           error_ctr = error_ctr + 1;
         end
 
-      $display("*** TC%d completed.", testcase);
+      $display("*** TC%02d completed.", testcase);
       $display("");
     end
   endtask // test

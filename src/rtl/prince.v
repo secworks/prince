@@ -60,8 +60,7 @@ module prince(
   localparam ADDR_VERSION      = 8'h02;
 
   localparam ADDR_CTRL         = 8'h08;
-  localparam CTRL_INIT_BIT     = 0;
-  localparam CTRL_NEXT_BIT     = 1;
+  localparam CTRL_NEXT_BIT     = 0;
 
   localparam ADDR_STATUS       = 8'h09;
   localparam STATUS_READY_BIT  = 0;
@@ -86,9 +85,6 @@ module prince(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg init_reg;
-  reg init_new;
-
   reg next_reg;
   reg next_new;
 
@@ -118,8 +114,8 @@ module prince(
   //----------------------------------------------------------------
   assign read_data = tmp_read_data;
 
-  assign core_key = {key_reg[0], key_reg[1], key_reg[2], key_reg[3]};
-  assign core_block  = {block_reg[0], block_reg[1]};
+  assign core_key = {key_reg[3], key_reg[2], key_reg[1], key_reg[0]};
+  assign core_block  = {block_reg[1], block_reg[0]};
 
 
   //----------------------------------------------------------------
@@ -130,7 +126,6 @@ module prince(
                    .reset_n(reset_n),
 
                    .encdec(encdec_reg),
-                   .init(init_reg),
                    .next(next_reg),
                    .ready(core_ready),
 
@@ -159,13 +154,11 @@ module prince(
           for (i = 0 ; i < 4 ; i = i + 1)
             key_reg[i] <= 32'h0;
 
-          init_reg   <= 1'h0;
           next_reg   <= 1'h0;
           encdec_reg <= 1'h0;
         end
       else
         begin
-          init_reg <= init_new;
           next_reg <= next_new;
 
           if (config_we)
@@ -189,7 +182,6 @@ module prince(
   //----------------------------------------------------------------
   always @*
     begin : api
-      init_new      = 1'h0;
       next_new      = 1'h0;
       config_we     = 1'h0;
       key_we        = 1'h0;
@@ -203,7 +195,6 @@ module prince(
               if (core_ready)
                 begin
                   if (address == ADDR_CTRL)
-                    init_new = write_data[CTRL_INIT_BIT];
                     next_new = write_data[CTRL_NEXT_BIT];
 
                   if (address == ADDR_CONFIG)
@@ -224,14 +215,12 @@ module prince(
                 ADDR_NAME1:   tmp_read_data = CORE_NAME1;
                 ADDR_VERSION: tmp_read_data = CORE_VERSION;
                 ADDR_STATUS:  tmp_read_data = {31'h0, core_ready};
-
+                ADDR_RESULT0: tmp_read_data = core_result[31 : 0];
+                ADDR_RESULT1: tmp_read_data = core_result[63 : 32];
                 default:
                   begin
                   end
               endcase // case (address)
-
-              if ((address >= ADDR_RESULT0) && (address <= ADDR_RESULT1))
-                tmp_read_data = core_result[(1 - (address - ADDR_RESULT0)) * 32 +: 32];
             end
         end
     end // addr_decoder

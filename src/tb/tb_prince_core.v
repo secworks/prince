@@ -79,7 +79,6 @@ module tb_prince_core();
                 .reset_n(tb_reset_n),
 
                 .encdec(tb_encdec),
-                .init(tb_init),
                 .next(tb_next),
                 .ready(tb_ready),
 
@@ -154,8 +153,8 @@ module tb_prince_core();
       $display("state_reg: 0x%016x, state_new: 0x%016x, state_we: 0x%01x",
                dut.state_reg, dut.state_new, dut.state_we);
       $display("");
-      $display("init_keys: 0x%01x, init_state: 0x%01x, update_state: 0x%01x",
-               dut.init_keys, dut.init_state, dut.update_state);
+      $display("init_state: 0x%01x, update_state: 0x%01x",
+               dut.init_state, dut.update_state);
       $display("core_ctrl_reg: 0x%02x, core_ctrl_new: 0x%02x, core_ctrl_we: 0x%01x",
                dut.core_ctrl_reg, dut.core_ctrl_new, dut.core_ctrl_we);
       $display("");
@@ -241,7 +240,6 @@ module tb_prince_core();
       tb_clk     = 0;
       tb_reset_n = 1;
       tb_encdec  = 0;
-      tb_init    = 0;
       tb_next    = 0;
       tb_key     = 128'h0;
       tb_block   = 64'h0;
@@ -265,17 +263,8 @@ module tb_prince_core();
       $display("*** TC%01d started.", tc);
       dump_dut_state();
 
-      $display("*** TC%01d - init for encryption started.", tc);
-      tb_init    = 1'h1;
-      tb_key     = key;
-      tb_encdec  = 1'h1;
-      #(CLK_PERIOD);
-      wait_ready();
-      $display("*** TC%01d - init for encryption completed.", tc);
-      dump_dut_state();
-      #(CLK_PERIOD);
-
       $display("*** TC%01d - encryption started.", tc);
+      tb_key     = key;
       tb_encdec  = 1'h1;
       tb_next    = 1'h1;
       tb_block   = plaintext;
@@ -295,17 +284,8 @@ module tb_prince_core();
           $display("*** TC%01d got:      0x%016x", tc, tb_result);
         end
 
-      $display("*** TC%01d - init for decryption started.", tc);
-      tb_init    = 1'h1;
-      tb_key     = key;
-      tb_encdec  = 1'h0;
-      #(CLK_PERIOD);
-      wait_ready();
-      $display("*** TC%01d - init for decryption completed.", tc);
-      dump_dut_state();
-      #(CLK_PERIOD);
-
       $display("*** TC%01d - decryption started.", tc);
+      tb_key    = key;
       tb_block  = ciphertext;
       tb_encdec = 1'h0;
       tb_next   = 1'h1;

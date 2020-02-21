@@ -41,7 +41,6 @@ module prince_core(
                    input wire           reset_n,
 
                    input wire           encdec,
-                   input wire           init,
                    input wire           next,
                    output wire          ready,
 
@@ -56,8 +55,7 @@ module prince_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   localparam CTRL_IDLE    = 2'h0;
-  localparam CTRL_INIT    = 2'h1;
-  localparam CTRL_NEXT    = 2'h2;
+  localparam CTRL_NEXT    = 2'h1;
 
   localparam ALPHA = 64'hc0ac29b7c97c50dd;
 
@@ -89,7 +87,6 @@ module prince_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg init_keys;
   reg init_state;
   reg update_state;
 
@@ -400,9 +397,12 @@ module prince_core(
       kp_new      = 64'h0;
       k_we        = 1'h0;
 
-      if (init_keys)
+      if (init_state)
         begin
-          k_we = 1'h1;
+          k_we      = 1'h1;
+          state_new = block;
+          state_we  = 1'h1;
+
           if (encdec)
             begin
               k0_new = key[127 : 64];
@@ -415,12 +415,6 @@ module prince_core(
               k0_new = {kp_new[0], kp_new[63 : 2], (kp_new[1] ^ kp_new[63])};
               k1_new = key[63 : 0] ^ ALPHA;
             end
-        end
-
-      if (init_state)
-        begin
-          state_new = block;
-          state_we  = 1'h1;
         end
 
       if (update_state)
@@ -462,22 +456,12 @@ module prince_core(
       ready_we      = 1'h0;
       init_state    = 1'h0;
       update_state  = 1'h0;
-      init_keys     = 1'h0;
       core_ctrl_new = CTRL_IDLE;
       core_ctrl_we  = 1'h0;
 
       case (core_ctrl_reg)
         CTRL_IDLE:
           begin
-            if (init)
-              begin
-                ready_new     = 1'h0;
-                ready_we      = 1'h1;
-                init_keys     = 1'h1;
-                core_ctrl_new = CTRL_INIT;
-                core_ctrl_we  = 1'h1;
-              end
-
             if (next)
               begin
                 ready_new     = 1'h0;
@@ -486,14 +470,6 @@ module prince_core(
                 core_ctrl_new = CTRL_NEXT;
                 core_ctrl_we  = 1'h1;
               end
-          end
-
-        CTRL_INIT:
-          begin
-            ready_new     = 1'h1;
-            ready_we      = 1'h1;
-            core_ctrl_new = CTRL_IDLE;
-            core_ctrl_we  = 1'h1;
           end
 
         CTRL_NEXT:
