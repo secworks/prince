@@ -143,10 +143,10 @@ module tb_prince_core();
       $display("r0: 0x%08x, r1:  0x%08x, r2:  0x%08x",
                dut.prince_core_dp.r0, dut.prince_core_dp.r1, dut.prince_core_dp.r2);
       $display("r3: 0x%08x, r4:  0x%08x, r5:  0x%08x",
-               dut.prince_core_dp.r3, dut.prince_core_dp.r4, dut.prince_core_dp.r5);
+               dut.r3_reg, dut.prince_core_dp.r4, dut.prince_core_dp.r5);
       $display("mr: 0x%08x", dut.mr_reg);
       $display("r6: 0x%08x, r7:  0x%08x, r8:  0x%08x",
-               dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
+               dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.r8_reg);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
                dut.prince_core_dp.r9, dut.prince_core_dp.r10, dut.prince_core_dp.r11);
       $display("core_output: 0x%08x", dut.prince_core_dp.core_output);
@@ -259,8 +259,8 @@ module tb_prince_core();
             input reg [63 : 0] plaintext, input reg [63 : 0] ciphertext);
     begin
       tc_ctr = tc_ctr + 1;
-      tb_monitor = 1;
-      tb_block   = 64'h0;
+      tb_monitor = 0;
+
       $display("*** TC%01d started.", tc);
       dump_dut_state();
 
@@ -295,7 +295,6 @@ module tb_prince_core();
       tb_next    = 1'h0;
       wait_ready();
       $display("*** TC%01d - decryption completed.", tc);
-      dump_dut_state();
 
       if (tb_result == plaintext)
         $display("*** TC%01d correct plaintext generated: 0x%016x",
@@ -308,7 +307,6 @@ module tb_prince_core();
           $display("*** TC%01d got:      0x%016x", tc, tb_result);
         end
 
-      #(2 * CLK_PERIOD);
       tb_monitor = 0;
 
       $display("*** TC%01d completed.", tc);

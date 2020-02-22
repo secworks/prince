@@ -16,21 +16,16 @@ latency block cipher suitable for Iot and embedded systems. The key is
 
 
 ## Implementation
-The implementation is currently a single cyle designs with all rounds as
-functions in the datapath. This will replicate the logic needed and will
-create a low latency implementation. Right now the max clock frequency
-is not known. Or the total size of the design.
+The implementation is currently a pipelined designs with three pipeline
+stages. With a cycle to initalize the state and a cycle for latching the
+result the latency is five cycles. The design does not use any RAM
+blocks nor DSPs.
+
 
 ## Implementation results
 ## Altera Cyclone V
-Device: 5CGXFC7C7F23C8
-
-ALMs: 950
-
-Regs: 456
-
-Block Ram: 0
-
-DSPs: 0
-
-Fmax: 29.35 MHz (!)
+* Device: 5CGXFC7C7F23C8
+* Tool version: Intel Quartus Prime 19.1
+* ALMs: 993
+* Regs: 716
+* Fmax: 102 MHz
