@@ -375,27 +375,33 @@ module prince_core(
       reg [63 : 0] r10;
       reg [63 : 0] r11;
 
-      core_input  = 64'h0;
-      core_output = 64'h0;
-      r0          = 64'h0;
-      r1          = 64'h0;
-      r2          = 64'h0;
-      r3          = 64'h0;
-      r4          = 64'h0;
-      r5          = 64'h0;
-      mr          = 64'h0;
-      r6          = 64'h0;
-      r7          = 64'h0;
-      r8          = 64'h0;
-      r9          = 64'h0;
-      r10         = 64'h0;
-      r11         = 64'h0;
       state_new   = 64'h0;
       state_we    = 1'h0;
       k0_new      = 64'h0;
       k1_new      = 64'h0;
       kp_new      = 64'h0;
       k_we        = 1'h0;
+
+      core_input = state_reg ^ k0_reg;
+      r0  = round0(core_input, k1_reg);
+
+      r1  = round(r0, k1_reg, 1);
+      r2  = round(r1, k1_reg, 2);
+      r3  = round(r2, k1_reg, 3);
+      r4  = round(r3, k1_reg, 4);
+      r5  = round(r4, k1_reg, 5);
+
+      mr = middle_round(r5);
+
+      r6  = iround(mr, k1_reg, 6);
+      r7  = iround(r6, k1_reg, 7);
+      r8  = iround(r7, k1_reg, 8);
+      r9  = iround(r8, k1_reg, 9);
+      r10 = iround(r9, k1_reg, 10);
+
+      r11 = round11(r10, k1_reg);
+      core_output = r11 ^ kp_reg;
+
 
       if (init_state)
         begin
@@ -419,26 +425,6 @@ module prince_core(
 
       if (update_state)
         begin
-          core_input = state_reg ^ k0_reg;
-          r0  = round0(core_input, k1_reg);
-
-          r1  = round(r0, k1_reg, 1);
-          r2  = round(r1, k1_reg, 2);
-          r3  = round(r2, k1_reg, 3);
-          r4  = round(r3, k1_reg, 4);
-          r5  = round(r4, k1_reg, 5);
-
-          mr = middle_round(r5);
-
-          r6  = iround(mr, k1_reg, 6);
-          r7  = iround(r6, k1_reg, 7);
-          r8  = iround(r7, k1_reg, 8);
-          r9  = iround(r8, k1_reg, 9);
-          r10 = iround(r9, k1_reg, 10);
-
-          r11 = round11(r10, k1_reg);
-          core_output = r11 ^ kp_reg;
-
           state_new = core_output;
           state_we  = 1'h1;
         end
