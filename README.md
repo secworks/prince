@@ -3,10 +3,8 @@ The Prince lightweight block cipher in Verilog.
 
 ## Status
 Core is functionally completed. Both core and top level provides correct
-results for all test vectors. The core is lint clean. The core has not
-yet been implemented in hardware.
-
-Use with caution.
+results for all test vectors. The core is lint clean. The core has been
+implemented in hardware.
 
 
 ## Introduction
