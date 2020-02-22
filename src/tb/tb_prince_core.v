@@ -144,7 +144,7 @@ module tb_prince_core();
                dut.prince_core_dp.r0, dut.prince_core_dp.r1, dut.prince_core_dp.r2);
       $display("r3: 0x%08x, r4:  0x%08x, r5:  0x%08x",
                dut.prince_core_dp.r3, dut.prince_core_dp.r4, dut.prince_core_dp.r5);
-      $display("mr: 0x%08x", dut.prince_core_dp.mr);
+      $display("mr: 0x%08x", dut.mr_reg);
       $display("r6: 0x%08x, r7:  0x%08x, r8:  0x%08x",
                dut.prince_core_dp.r6, dut.prince_core_dp.r7, dut.prince_core_dp.r8);
       $display("r9: 0x%08x, r10: 0x%08x, r11: 0x%08x",
@@ -212,6 +212,7 @@ module tb_prince_core();
   //----------------------------------------------------------------
   task wait_ready;
     begin
+      #(2 * CLK_PERIOD);
       while (!tb_ready)
         begin
           #(CLK_PERIOD);
@@ -266,9 +267,10 @@ module tb_prince_core();
       $display("*** TC%01d - encryption started.", tc);
       tb_key     = key;
       tb_encdec  = 1'h1;
-      tb_next    = 1'h1;
       tb_block   = plaintext;
-      #(2 * CLK_PERIOD);
+      tb_next    = 1'h1;
+      #(CLK_PERIOD);
+      tb_next    = 1'h0;
       wait_ready();
       $display("*** TC%01d - encryption completed.", tc);
       dump_dut_state();
@@ -289,7 +291,8 @@ module tb_prince_core();
       tb_block  = ciphertext;
       tb_encdec = 1'h0;
       tb_next   = 1'h1;
-      #(2 * CLK_PERIOD);
+      #(CLK_PERIOD);
+      tb_next    = 1'h0;
       wait_ready();
       $display("*** TC%01d - decryption completed.", tc);
       dump_dut_state();
