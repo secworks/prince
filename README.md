@@ -27,3 +27,10 @@ blocks nor DSPs.
 * ALMs: 993
 * Regs: 716
 * Fmax: 102 MHz
+
+## Xilinx Artix-7
+* Device: xc7a200tsbv484-2
+* Tool version: Vivado 2019.2
+* LUTs: 1587
+* FFs: 646
+* Fmax: 150 MHz
