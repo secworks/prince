@@ -328,7 +328,7 @@ module prince_core(
   //
   // Update functionality for all registers in the core.
   // All registers are positive edge triggered with asynchronous
-  // active low reset. All registers have write enable.
+  // active low reset.
   //----------------------------------------------------------------
   always @ (posedge clk or negedge reset_n)
     begin: reg_update
@@ -391,12 +391,12 @@ module prince_core(
       reg [63 : 0] r10;
       reg [63 : 0] r11;
 
-      state_new   = 64'h0;
-      state_we    = 1'h0;
-      k0_new      = 64'h0;
-      k1_new      = 64'h0;
-      kp_new      = 64'h0;
-      k_we        = 1'h0;
+      state_new = 64'h0;
+      state_we  = 1'h0;
+      k0_new    = 64'h0;
+      k1_new    = 64'h0;
+      kp_new    = 64'h0;
+      k_we      = 1'h0;
 
 
       // Pipeline stages.
