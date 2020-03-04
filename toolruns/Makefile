@@ -6,7 +6,7 @@
 #
 #
 # Author: Joachim Strombergson
-# Copyright (c) 2014, Secworks Sweden AB
+# Copyright (c) 2020, Assured AB
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or
@@ -78,7 +78,7 @@ clean:
 
 
 help:
-	@echo "Build system for simulation of AES Verilog core"
+	@echo "Build system for simulation of Prince core"
 	@echo ""
 	@echo "Supported targets:"
 	@echo "------------------"
