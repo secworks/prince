@@ -1,7 +1,7 @@
 //======================================================================
 //
 // tb_prince.v
-// ---------
+// -----------
 // Testbench for the prince top level wrapper
 //
 //
@@ -289,7 +289,7 @@ module tb_prince();
 
 
   //----------------------------------------------------------------
-  // testr()
+  // test()
   //----------------------------------------------------------------
   task test(input integer testcase, input [127 : 0] key,
             input [63 : 0] plaintext, input [63 : 0] ciphertext);
