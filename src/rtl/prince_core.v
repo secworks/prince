@@ -300,7 +300,7 @@ module prince_core(
 
   function [63 : 0] round11(input [63 : 0] b, input [63 : 0] k);
     begin
-      round11 =  b ^ k ^ rc(11);;
+      round11 =  b ^ k ^ rc(11);
     end
   endfunction // round11
 
