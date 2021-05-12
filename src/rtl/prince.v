@@ -36,6 +36,8 @@
 //
 //======================================================================
 
+`default_nettype none
+
 module prince(
               // Clock and reset.
               input wire           clk,
