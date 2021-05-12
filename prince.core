@@ -1,0 +1,44 @@
+CAPI=2:
+
+name : secworks:crypto:prince:0
+
+filesets:
+  rtl:
+    files:
+      - src/rtl/prince.v
+      - src/rtl/prince_core.v
+    file_type : verilogSource
+
+  tb:
+    files:
+      - src/tb/tb_prince.v
+      - src/tb/tb_prince_core.v
+    file_type : verilogSource
+
+  openlane: {files : [data/sky130.tcl : {file_type : tclSource}]}
+
+targets:
+  default:
+    filesets: [rtl]
+
+  lint:
+    default_tool : verilator
+    filesets : [rtl]
+    tools:
+      verilator:
+        mode : lint-only
+    toplevel : prince
+
+  sky130:
+    default_tool: openlane
+    filesets: [rtl, openlane]
+    toplevel: prince
+
+  tb_prince: &tb
+    default_tool: icarus
+    filesets: [rtl, tb]
+    toplevel : tb_prince
+
+  tb_prince_core:
+    <<: *tb
+    toplevel : tb_prince_core
