@@ -35,24 +35,24 @@ Create and enter a new workspace
 mkdir workspace && cd workspace
 ~~~
 
-Register sha512 as a library in the workspace
+Register prince as a library in the workspace
 ~~~
-fusesoc library add sha512 /path/to/sha512
+fusesoc library add prince /path/to/prince
 ~~~
 ...if repo is available locally or...
 ...to get the upstream repo
 ~~~
-fusesoc library add sha512 https://github.com/secworks/sha512
+fusesoc library add prince https://github.com/secworks/prince
 ~~~
 
-Run tb_sha512 testbench
+Run tb_prince testbench
 ~~~
-fusesoc run --target=tb_sha512 secworks:crypto:sha512
+fusesoc run --target=tb_prince secworks:crypto:prince
 ~~~
 
 Run with modelsim instead of default tool (icarus)
 ~~~
-fusesoc run --target=tb_sha512 --tool=modelsim secworks:crypto:sha512
+fusesoc run --target=tb_prince --tool=modelsim secworks:crypto:prince
 ~~~
 
 
