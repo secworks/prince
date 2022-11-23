@@ -53,11 +53,11 @@ all: top.sim core.sim
 
 
 top.sim: $(TB_TOP_SRC) $(TOP_SRC)
-	$(CC) $(CC_FLAGS) -o top.sim $(TB_TOP_SRC) $(TOP_SRC)
+	$(CC) $(CC_FLAGS) -o $@ $^$
 
 
 core.sim: $(TB_CORE_SRC) $(CORE_SRC)
-	$(CC) $(CC_FLAGS) -o core.sim $(TB_CORE_SRC) $(CORE_SRC)
+	$(CC) $(CC_FLAGS) -o  $@ $^
 
 
 sim-top: top.sim
