@@ -7,6 +7,7 @@ filesets:
     files:
       - src/rtl/prince.v
       - src/rtl/prince_core.v
+      - src/rtl/prince_round_functions.v
     file_type : verilogSource
 
   tb:
