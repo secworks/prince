@@ -42,6 +42,9 @@ TB_CORE_SRC =../src/tb/tb_prince_core.v
 TOP_SRC=../src/rtl/prince.v $(CORE_SRC)
 TB_TOP_SRC =../src/tb/tb_prince.v
 
+INCDIR   = ../src/rtl
+INCFILES = ../src/rtl/prince_round_functions.vh
+
 CC = iverilog
 CC_FLAGS = -Wall
 
@@ -52,12 +55,12 @@ LINT_FLAGS = +1364-2001ext+ --lint-only  -Wall -Wno-fatal -Wno-DECLFILENAME
 all: top.sim core.sim
 
 
-top.sim: $(TB_TOP_SRC) $(TOP_SRC)
-	$(CC) $(CC_FLAGS) -o $@ $^$
+top.sim: $(TB_TOP_SRC) $(TOP_SRC) $(INCFILES)
+	$(CC) $(CC_FLAGS) -I$(INCDIR) -o $@ $(TB_TOP_SRC) $(TOP_SRC)
 
 
-core.sim: $(TB_CORE_SRC) $(CORE_SRC)
-	$(CC) $(CC_FLAGS) -o  $@ $^
+core.sim: $(TB_CORE_SRC) $(CORE_SRC) $(INCFILES)
+	$(CC) $(CC_FLAGS) -I$(INCDIR) -o $@ $(TB_TOP_SRC) $(TOP_SRC)
 
 
 sim-top: top.sim
@@ -68,8 +71,8 @@ sim-core: core.sim
 	./core.sim
 
 
-lint:  $(TOP_SRC)
-	$(LINT) $(LINT_FLAGS) $(TOP_SRC)
+lint:  $(TOP_SRC) $(INCFILES)
+	$(LINT) $(LINT_FLAGS) +incdir+$(INCDIR) $(TOP_SRC)
 
 
 clean:
