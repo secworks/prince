@@ -168,13 +168,13 @@ module tb_prince_core();
   //----------------------------------------------------------------
   task reset_dut;
     begin
-      $display("*** DUT before reset:");
+      $display("--- DUT before reset:");
       dump_dut_state();
-      $display("*** Toggling reset.");
+      $display("--- Toggling reset.");
       tb_reset_n = 0;
       #(2 * CLK_PERIOD);
       tb_reset_n = 1;
-      $display("*** DUT after reset:");
+      $display("--- DUT after reset:");
       dump_dut_state();
     end
   endtask // reset_dut
@@ -189,11 +189,11 @@ module tb_prince_core();
     begin
       if (error_ctr == 0)
         begin
-          $display("*** All %02d test cases completed successfully", tc_ctr);
+          $display("--- All %02d test cases completed successfully", tc_ctr);
         end
       else
         begin
-          $display("*** %02d tests completed - %02d test cases did not complete successfully.",
+          $display("--- %02d tests completed - %02d test cases did not complete successfully.",
                    tc_ctr, error_ctr);
         end
     end
@@ -260,10 +260,10 @@ module tb_prince_core();
       tc_ctr = tc_ctr + 1;
       tb_monitor = 0;
 
-      $display("*** TC%01d started.", tc);
+      $display("--- TC%01d started.", tc);
       dump_dut_state();
 
-      $display("*** TC%01d - encryption started.", tc);
+      $display("--- TC%01d - encryption started.", tc);
       tb_key     = key;
       tb_encdec  = 1'h1;
       tb_block   = plaintext;
@@ -271,21 +271,21 @@ module tb_prince_core();
       #(CLK_PERIOD);
       tb_next    = 1'h0;
       wait_ready();
-      $display("*** TC%01d - encryption completed.", tc);
+      $display("--- TC%01d - encryption completed.", tc);
       dump_dut_state();
 
       if (tb_result == ciphertext)
-        $display("*** TC%01d correct ciphertext generated: 0x%016x",
+        $display("--- TC%01d correct ciphertext generated: 0x%016x",
                  tc, tb_result);
       else
         begin
           error_ctr = error_ctr + 1;
-          $display("*** TC%01d incorrect ciphertext generated", tc);
-          $display("*** TC%01d expected: 0x%016x", tc, ciphertext);
-          $display("*** TC%01d got:      0x%016x", tc, tb_result);
+          $display("--- TC%01d incorrect ciphertext generated", tc);
+          $display("--- TC%01d expected: 0x%016x", tc, ciphertext);
+          $display("--- TC%01d got:      0x%016x", tc, tb_result);
         end
 
-      $display("*** TC%01d - decryption started.", tc);
+      $display("--- TC%01d - decryption started.", tc);
       tb_key    = key;
       tb_block  = ciphertext;
       tb_encdec = 1'h0;
@@ -293,22 +293,22 @@ module tb_prince_core();
       #(CLK_PERIOD);
       tb_next    = 1'h0;
       wait_ready();
-      $display("*** TC%01d - decryption completed.", tc);
+      $display("--- TC%01d - decryption completed.", tc);
 
       if (tb_result == plaintext)
-        $display("*** TC%01d correct plaintext generated: 0x%016x",
+        $display("--- TC%01d correct plaintext generated: 0x%016x",
                  tc, tb_result);
       else
         begin
           error_ctr = error_ctr + 1;
-          $display("*** TC%01d incorrect plaintext generated", tc);
-          $display("*** TC%01d expected: 0x%016x", tc, plaintext);
-          $display("*** TC%01d got:      0x%016x", tc, tb_result);
+          $display("--- TC%01d incorrect plaintext generated", tc);
+          $display("--- TC%01d expected: 0x%016x", tc, plaintext);
+          $display("--- TC%01d got:      0x%016x", tc, tb_result);
         end
 
       tb_monitor = 0;
 
-      $display("*** TC%01d completed.", tc);
+      $display("--- TC%01d completed.", tc);
       $display("");
     end
   endtask // test
@@ -321,7 +321,8 @@ module tb_prince_core();
   //----------------------------------------------------------------
   initial
     begin : prince_core_test
-      $display("*** Simulation of PRINCE core started.");
+      $display("   -= Testbench for prince core started =-");
+      $display("     ===================================");
       $display("");
 
       init_sim();
@@ -356,7 +357,9 @@ module tb_prince_core();
 
       display_test_result();
       $display("");
-      $display("*** Simulation of PRINCE core completed.");
+      $display("   -= Testbench for prince core completed =-");
+      $display("     =====================================");
+      $display("");
       $finish;
     end // prince_core_test
 endmodule // tb_prince_core

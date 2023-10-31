@@ -172,7 +172,7 @@ module tb_prince();
   //----------------------------------------------------------------
   task reset_dut;
     begin
-      $display("*** Toggle reset.");
+      $display("--- Toggle reset.");
       tb_reset_n = 0;
       #(2 * CLK_PERIOD);
       tb_reset_n = 1;
@@ -189,11 +189,11 @@ module tb_prince();
     begin
       if (error_ctr == 0)
         begin
-          $display("*** All %02d test cases completed successfully", tc_ctr);
+          $display("--- All %02d test cases completed successfully", tc_ctr);
         end
       else
         begin
-          $display("*** %02d tests completed - %02d test cases did not complete successfully.",
+          $display("--- %02d tests completed - %02d test cases did not complete successfully.",
                    tc_ctr, error_ctr);
         end
     end
@@ -233,7 +233,7 @@ module tb_prince();
     begin
       if (DEBUG)
         begin
-          $display("*** Writing 0x%08x to 0x%02x.", word, address);
+          $display("--- Writing 0x%08x to 0x%02x.", word, address);
           $display("");
         end
 
@@ -266,7 +266,7 @@ module tb_prince();
 
       if (DEBUG)
         begin
-          $display("*** Reading 0x%08x from 0x%02x.", read_data, address);
+          $display("--- Reading 0x%08x from 0x%02x.", read_data, address);
           $display("");
         end
     end
@@ -299,7 +299,7 @@ module tb_prince();
       tc_ctr = tc_ctr + 1;
 
       $display("");
-      $display("*** TC%02d started.", testcase);
+      $display("--- TC%02d started.", testcase);
 
       // Encryption.
       write_word(ADDR_KEY0, key[031 : 00]);
@@ -310,9 +310,9 @@ module tb_prince();
       write_word(ADDR_BLOCK0, plaintext[31 : 00]);
       write_word(ADDR_BLOCK1, plaintext[63 : 32]);
       write_word(ADDR_CTRL, 32'h1);
-      $display("*** TC%02d - encryption started.", testcase);
+      $display("--- TC%02d - encryption started.", testcase);
       wait_ready();
-      $display("*** TC%02d - encryption completed.", testcase);
+      $display("--- TC%02d - encryption completed.", testcase);
 
       read_word(ADDR_RESULT0);
       enc_res[31 : 0] = read_data;
@@ -321,11 +321,11 @@ module tb_prince();
 
       if (enc_res == ciphertext)
         begin
-          $display("*** Correct ciphertext received.");
+          $display("--- Correct ciphertext received.");
         end
       else
         begin
-          $display("*** Incorrect ciphertext received. Expected 0x%016x, got 0x%016x", ciphertext, enc_res);
+          $display("--- Incorrect ciphertext received. Expected 0x%016x, got 0x%016x", ciphertext, enc_res);
           error_ctr = error_ctr + 1;
         end
       $display("");
@@ -335,9 +335,9 @@ module tb_prince();
       write_word(ADDR_BLOCK1, ciphertext[63 : 32]);
       write_word(ADDR_CONFIG, 32'h0);
       write_word(ADDR_CTRL, 32'h1);
-      $display("*** TC%02d - decryption started.", testcase);
+      $display("--- TC%02d - decryption started.", testcase);
       wait_ready();
-      $display("*** TC%02d - decryption started.", testcase);
+      $display("--- TC%02d - decryption started.", testcase);
 
       read_word(ADDR_RESULT0);
       dec_res[31 : 0] = read_data;
@@ -346,15 +346,15 @@ module tb_prince();
 
       if (dec_res == plaintext)
         begin
-          $display("*** Correct plaintext received.");
+          $display("--- Correct plaintext received.");
         end
       else
         begin
-          $display("*** Incorrect plaintext received. Expected 0x%016x, got 0x%016x", plaintext, dec_res);
+          $display("--- Incorrect plaintext received. Expected 0x%016x, got 0x%016x", plaintext, dec_res);
           error_ctr = error_ctr + 1;
         end
 
-      $display("*** TC%02d completed.", testcase);
+      $display("--- TC%02d completed.", testcase);
       $display("");
     end
   endtask // test
@@ -366,7 +366,7 @@ module tb_prince();
   initial
     begin : prince_test
       $display("   -= Testbench for prince started =-");
-      $display("     ============================");
+      $display("     ==============================");
       $display("");
 
       init_sim();
@@ -401,7 +401,8 @@ module tb_prince();
 
       display_test_result();
       $display("");
-      $display("*** prince simulation done. ***");
+      $display("   -= Testbench for prince completed =-");
+      $display("     ================================");
       $finish;
     end // prince_test
 endmodule // tb_prince
