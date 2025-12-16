@@ -1,6 +1,8 @@
 CAPI=2:
 
-name : secworks:crypto:prince:0
+name: secworks:crypto:prince:1.0.0
+description: The Prince lightweight block cipher in Verilog.
+license: BSD-2-Clause
 
 filesets:
   rtl:
